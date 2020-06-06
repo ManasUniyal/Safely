@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
+    static {
+        System.loadLibrary("native-lib");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            //TODO: send the bestFace to through the Handler to Camera OverLay
 
             if(faces != null && mode != null) {
                 Log.e("Face found", "faces : " + faces.length + " , mode : " + mode);

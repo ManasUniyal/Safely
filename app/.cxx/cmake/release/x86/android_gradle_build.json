@@ -1,0 +1,54 @@
+
+{
+	"buildFiles" : [ "D:/Mini Project/app/CMakeLists.txt" ],
+	"cleanCommands" : 
+	[
+		"C:\\Users\\DELL\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build \"D:\\Mini Project\\app\\.cxx\\cmake\\release\\x86\" --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"dlib-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "dlib",
+			"buildType" : "release",
+			"output" : "D:/Mini Project/app/src/main/cppLibs/dlib/lib/x86/libdlib.so",
+			"toolchain" : "3134895783"
+		},
+		"lib_opencv-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "lib_opencv",
+			"buildType" : "release",
+			"output" : "D:/Mini Project/app/src/main/cppLibs/opencv/x86/libopencv_java4.so",
+			"toolchain" : "3134895783"
+		},
+		"native-lib-Release-x86" : 
+		{
+			"abi" : "x86",
+			"artifactName" : "native-lib",
+			"buildCommand" : "C:\\Users\\DELL\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build \"D:\\Mini Project\\app\\.cxx\\cmake\\release\\x86\" --target native-lib",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=i686-none-linux-android16 --gcc-toolchain=C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Dnative_lib_EXPORTS -IE:\\Downloads\\opencv-4.1.0-android-sdk\\sdk\\native\\jni\\include -I..\\..\\..\\..\\src\\main\\cppLibs\\dlib\\include -I..\\..\\..\\..\\include  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -std=c++11 -frtti -fexceptions -fexceptions -std=c++11 -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "D:/Mini Project/app/src/main/cpp/native-lib.cpp",
+					"workingDirectory" : "D:/Mini Project/app/.cxx/cmake/release/x86"
+				}
+			],
+			"output" : "D:/Mini Project/app/build/intermediates/cmake/release/obj/x86/libnative-lib.so",
+			"toolchain" : "3134895783"
+		}
+	},
+	"toolchains" : 
+	{
+		"3134895783" : 
+		{
+			"cCompilerExecutable" : "C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

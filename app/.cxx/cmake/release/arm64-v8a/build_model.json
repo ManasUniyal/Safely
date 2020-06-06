@@ -1,0 +1,79 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "D:\\Mini Project",
+      "sdkFolder": "C:\\Users\\DELL\\AppData\\Local\\Android\\Sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "D:\\Mini Project\\app\\build\\intermediates",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "D:\\Mini Project\\app",
+      "makeFile": "D:\\Mini Project\\app\\CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "D:\\Mini Project\\.cxx",
+      "cxxFolder": "D:\\Mini Project\\app\\.cxx",
+      "ndkFolder": "C:\\Users\\DELL\\AppData\\Local\\Android\\Sdk\\ndk\\21.2.6472646",
+      "ndkVersion": "21.2.6472646",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [
+      "-DANDROID_PLATFORM\u003dandroid-16",
+      "-DANDROID_TOOLCHAIN\u003dclang",
+      "-DANDROID_STL\u003dc++_shared",
+      "-DANDROID_CPP_FEATURES\u003drtti exceptions"
+    ],
+    "cFlagList": [
+      "-O3"
+    ],
+    "cppFlagsList": [
+      "-std\u003dc++11 -frtti -fexceptions"
+    ],
+    "variantName": "release",
+    "soFolder": "D:\\Mini Project\\app\\build\\intermediates\\cmake\\release\\lib",
+    "objFolder": "D:\\Mini Project\\app\\build\\intermediates\\cmake\\release\\obj",
+    "jsonFolder": "D:\\Mini Project\\app\\.cxx\\cmake\\release",
+    "gradleBuildOutputFolder": "D:\\Mini Project\\app\\.cxx\\cxx\\release",
+    "isDebuggableEnabled": false,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A",
+      "X86",
+      "X86_64"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARM64_V8A",
+  "abiPlatformVersion": 26,
+  "cxxBuildFolder": "D:\\Mini Project\\app\\.cxx\\cmake\\release\\arm64-v8a",
+  "jsonFile": "D:\\Mini Project\\app\\.cxx\\cmake\\release\\arm64-v8a\\android_gradle_build.json",
+  "gradleBuildOutputFolder": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a",
+  "objFolder": "D:\\Mini Project\\app\\build\\intermediates\\cmake\\release\\obj\\arm64-v8a",
+  "buildCommandFile": "D:\\Mini Project\\app\\.cxx\\cmake\\release\\arm64-v8a\\build_command.txt",
+  "buildOutputFile": "D:\\Mini Project\\app\\.cxx\\cmake\\release\\arm64-v8a\\build_output.txt",
+  "modelOutputFile": "D:\\Mini Project\\app\\.cxx\\cmake\\release\\arm64-v8a\\build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a\\CMakeLists.txt",
+    "toolchainWrapperFile": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a\\android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a\\build_generation_state.json",
+    "cacheKeyFile": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a\\compiler_cache_key.json",
+    "compilerCacheUseFile": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a\\compiler_cache_use.json",
+    "compilerCacheWriteFile": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a\\compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "D:\\Mini Project\\app\\.cxx\\cxx\\release\\arm64-v8a\\compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "D:\\Mini Project\\app\\.cxx\\cmake\\release\\arm64-v8a\\json_generation_record.json",
+  "compileCommandsJsonFile": "D:\\Mini Project\\app\\.cxx\\cmake\\release\\arm64-v8a\\compile_commands.json"
+}

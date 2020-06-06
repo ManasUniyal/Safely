@@ -1,0 +1,3 @@
+D:/Mini Project/app/.cxx/cmake/release/arm64-v8a/CMakeFiles/native-lib.dir
+D:/Mini Project/app/.cxx/cmake/release/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Mini Project/app/.cxx/cmake/release/arm64-v8a/CMakeFiles/rebuild_cache.dir

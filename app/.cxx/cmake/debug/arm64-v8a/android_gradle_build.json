@@ -1,0 +1,54 @@
+
+{
+	"buildFiles" : [ "D:/Mini Project/app/CMakeLists.txt" ],
+	"cleanCommands" : 
+	[
+		"C:\\Users\\DELL\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build \"D:\\Mini Project\\app\\.cxx\\cmake\\debug\\arm64-v8a\" --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"dlib-Debug-arm64-v8a" : 
+		{
+			"abi" : "arm64-v8a",
+			"artifactName" : "dlib",
+			"buildType" : "debug",
+			"output" : "D:/Mini Project/app/src/main/cppLibs/dlib/lib/arm64-v8a/libdlib.so",
+			"toolchain" : "3134895783"
+		},
+		"lib_opencv-Debug-arm64-v8a" : 
+		{
+			"abi" : "arm64-v8a",
+			"artifactName" : "lib_opencv",
+			"buildType" : "debug",
+			"output" : "D:/Mini Project/app/src/main/cppLibs/opencv/arm64-v8a/libopencv_java4.so",
+			"toolchain" : "3134895783"
+		},
+		"native-lib-Debug-arm64-v8a" : 
+		{
+			"abi" : "arm64-v8a",
+			"artifactName" : "native-lib",
+			"buildCommand" : "C:\\Users\\DELL\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build \"D:\\Mini Project\\app\\.cxx\\cmake\\debug\\arm64-v8a\" --target native-lib",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=aarch64-none-linux-android21 --gcc-toolchain=C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Dnative_lib_EXPORTS -IE:\\Downloads\\opencv-4.1.0-android-sdk\\sdk\\native\\jni\\include -I..\\..\\..\\..\\src\\main\\cppLibs\\dlib\\include -I..\\..\\..\\..\\include  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -frtti -fexceptions -std=c++11 -frtti -fexceptions -fexceptions -std=c++11 -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "D:/Mini Project/app/src/main/cpp/native-lib.cpp",
+					"workingDirectory" : "D:/Mini Project/app/.cxx/cmake/debug/arm64-v8a"
+				}
+			],
+			"output" : "D:/Mini Project/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so",
+			"toolchain" : "3134895783"
+		}
+	},
+	"toolchains" : 
+	{
+		"3134895783" : 
+		{
+			"cCompilerExecutable" : "C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/DELL/AppData/Local/Android/Sdk/ndk/21.2.6472646/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}
