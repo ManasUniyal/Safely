@@ -35,6 +35,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
@@ -52,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,11 +61,13 @@ public class MainActivity extends AppCompatActivity {
     private TextureView textureView;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
         ORIENTATIONS.append(Surface.ROTATION_180, 270);
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
+        System.loadLibrary("native-lib");
     }
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -75,18 +79,16 @@ public class MainActivity extends AppCompatActivity {
     private CaptureRequest.Builder captureRequestBuilder;
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
-
-    static {
-        System.loadLibrary("native-lib");
-    }
+    private Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadModel();
-
+        Model model = new Model(this);
+        model.start();
+        
         textureView = findViewById(R.id.textureView);
         captureButton = findViewById(R.id.captureButton);
 
@@ -103,30 +105,9 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: TO be implemented in a separate thread and in a different class
 
-    private void loadModel() {
-        AssetManager assetManager = getApplicationContext().getAssets();
-        File file = new File(getCacheDir()+"/eye_eyebrows_22.dat");
-        try {
-
-            InputStream inputStream = assetManager.open("eye_eyebrows_22.dat");
-            int size = inputStream.available();
-            byte[] buffer = new byte[size];
-            inputStream.read(buffer);
-            inputStream.close();
-
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(buffer);
-            fileOutputStream.close();
-
-            Native.loadModel(file.getPath());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("Model","Error in loading file");
-        }
-    }
-
     //TODO: This is where the code for facial detection is to be implemented
+    //Can use FaceDetector Class in case there are compatibility issues
+
     final CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
 
         public void process(CaptureResult result) {
@@ -316,8 +297,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        closeCamera();
         stopBackgroundThread();
         super.onPause();
+    }
+
+    private void closeCamera() {
+        try {
+            mCameraOpenCloseLock.acquire();
+            if (cameraCaptureSession != null) {
+                cameraCaptureSession.close();
+                cameraCaptureSession = null;
+            }
+            if (cameraDevice != null) {
+                cameraDevice.close();
+                cameraDevice = null;
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
+        } finally {
+            mCameraOpenCloseLock.release();
+        }
     }
 
     private void stopBackgroundThread() {
