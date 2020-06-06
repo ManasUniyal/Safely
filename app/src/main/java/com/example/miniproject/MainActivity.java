@@ -7,7 +7,11 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -18,6 +22,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.Face;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -25,17 +30,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,25 +53,24 @@ public class MainActivity extends AppCompatActivity {
     private Button captureButton;
     private TextureView textureView;
 
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray(4);
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
-        ORIENTATIONS.append(Surface.ROTATION_0,90);
-        ORIENTATIONS.append(Surface.ROTATION_90,0);
-        ORIENTATIONS.append(Surface.ROTATION_180,270);
-        ORIENTATIONS.append(Surface.ROTATION_270,180);
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    private static final int REQUEST_CAMERA_PERMISSION = 200;
+    private static final int REQUEST_CAMERA_PERMISSION = 1;
+
     private String cameraID;
     private CameraDevice cameraDevice;
     private CameraCaptureSession cameraCaptureSession;
     private Size imageDimension;
     private CaptureRequest.Builder captureRequestBuilder;
-    private ImageReader imageReader;
-    private boolean mFlashSupported;
+    private ImageReader mImageReader;
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
-
 
 
     @Override
@@ -78,92 +87,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //take picture
-                Log.d("Button pressed", "Image to be captured");
+                Toast.makeText(getApplicationContext(),"Image to be captured", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void getCameraPreview(){
-        if(cameraDevice == null)
-            return;
-        CameraManager cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
-            CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraDevice.getId());
-            Size[] jpegSizes = null;
-            if(cameraCharacteristics != null){
-                jpegSizes = cameraCharacteristics.get(cameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
+    //TODO: This is where the code for facial detection is to be implemented
+    final CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
+
+        public void process(CaptureResult result) {
+            Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
+            Face[] faces = result.get(CaptureResult.STATISTICS_FACES);
+            if(faces != null && mode != null) {
+                Log.e("chehera mila", "faces : " + faces.length + " , mode : " + mode);
+            } else {
+                Log.e("Face", "Not found");
             }
-            int width = 640;
-            int height = 480;
-            if(jpegSizes != null && jpegSizes.length > 0){
-                width = jpegSizes[0].getWidth();
-                height = jpegSizes[0].getHeight();
-            }
-
-            ImageReader imageReader = ImageReader.newInstance(width,height,ImageFormat.JPEG,1);
-            List<Surface> outputSurface = new ArrayList<>(2);
-            outputSurface.add(imageReader.getSurface());
-            outputSurface.add(new Surface(textureView.getSurfaceTexture()));
-
-            //Camera set only for preview
-            final CaptureRequest.Builder captureBuilder =  cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            captureBuilder.addTarget(imageReader.getSurface());
-            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-
-            //Check orientation based on device
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-
-            ImageReader.OnImageAvailableListener readListener = new ImageReader.OnImageAvailableListener() {
-                @Override
-                public void onImageAvailable(ImageReader reader) {
-                    Image image = null;
-                    image = reader.acquireLatestImage();
-                    Log.i("Image", "available for preview in image reader");
-                    if(image != null)
-                        image.close();
-                }
-            };
-
-            imageReader.setOnImageAvailableListener(readListener, mBackgroundHandler);
-
-
-            //TODO: This is where the code for facial detection is to be implemented
-
-            final CameraCaptureSession.CaptureCallback captureCallback = new CameraCaptureSession.CaptureCallback() {
-                @Override
-                public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
-                    super.onCaptureProgressed(session, request, partialResult);
-                    createCameraPreview();
-                }
-
-                @Override
-                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
-                    super.onCaptureCompleted(session, request, result);
-                }
-            };
-
-            cameraDevice.createCaptureSession(outputSurface, new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession session) {
-                    try {
-                        cameraCaptureSession.capture(captureBuilder.build(),captureCallback,mBackgroundHandler);
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                @Override
-                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-
-                }
-            },mBackgroundHandler);
-
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
         }
-    }
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
+            process(partialResult);
+            createCameraPreview();
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            process(result);
+        }
+    };
 
     private void createCameraPreview() {
         SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
@@ -198,17 +150,19 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"Error",Toast.LENGTH_SHORT).show();
         }
         captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+        captureRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, CameraMetadata.STATISTICS_FACE_DETECT_MODE_FULL);
         try {
-            cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(),null,mBackgroundHandler);
+            cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), captureCallback,mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
 
-    private void openCamera() {
+    private void openCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
         try {
-            cameraID = cameraManager.getCameraIdList()[0]; // Get the front facing camera
+            configureTransform(width, height);
+            cameraID = cameraManager.getCameraIdList()[1]; // Get the front facing camera
             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraID);
             StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             if(streamConfigurationMap != null){
@@ -258,12 +212,12 @@ public class MainActivity extends AppCompatActivity {
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            openCamera();
+            openCamera(width, height);
         }
 
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
+            configureTransform(width,height);
         }
 
         @Override
@@ -277,12 +231,38 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private void configureTransform(int viewWidth, int viewHeight) {
+
+        if (textureView == null || imageDimension == null) {
+            return;
+        }
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        Matrix matrix = new Matrix();
+        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+        RectF bufferRect = new RectF(0, 0, imageDimension.getHeight(), imageDimension.getWidth());
+        float centerX = viewRect.centerX();
+        float centerY = viewRect.centerY();
+        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
+            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+            float scale = Math.max(
+                    (float) viewHeight / imageDimension.getHeight(),
+                    (float) viewWidth / imageDimension.getWidth());
+            matrix.postScale(scale, scale, centerX, centerY);
+            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+        } else if (Surface.ROTATION_180 == rotation) {
+            matrix.postRotate(180, centerX, centerY);
+        }
+        textureView.setTransform(matrix);
+    }
+
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    public void onResume() {
+        super.onResume();
         startBackgroundThread();
-        if(textureView.isAvailable()){
-            openCamera();
+
+        if (textureView.isAvailable()) {
+            openCamera(textureView.getWidth(), textureView.getHeight());
         } else {
             textureView.setSurfaceTextureListener(textureListener);
         }
@@ -310,4 +290,5 @@ public class MainActivity extends AppCompatActivity {
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
+
 }
