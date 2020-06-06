@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
@@ -42,6 +43,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        loadModel();
+
         textureView = findViewById(R.id.textureView);
         captureButton = findViewById(R.id.captureButton);
 
@@ -92,6 +99,31 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Image to be captured", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    //TODO: TO be implemented in a separate thread and in a different class
+
+    private void loadModel() {
+        AssetManager assetManager = getApplicationContext().getAssets();
+        File file = new File(getCacheDir()+"/eye_eyebrows_22.dat");
+        try {
+
+            InputStream inputStream = assetManager.open("eye_eyebrows_22.dat");
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(buffer);
+            fileOutputStream.close();
+
+            Native.loadModel(file.getPath());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Model","Error in loading file");
+        }
     }
 
     //TODO: This is where the code for facial detection is to be implemented
@@ -118,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
             if(faces != null && mode != null) {
                 Log.e("Face found", "faces : " + faces.length + " , mode : " + mode);
             }
-            //get the best possible face
         }
 
         @Override
