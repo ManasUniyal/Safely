@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private CameraCaptureSession cameraCaptureSession;
     private Size imageDimension;
     private CaptureRequest.Builder captureRequestBuilder;
-    private ImageReader mImageReader;
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
 
@@ -98,11 +97,23 @@ public class MainActivity extends AppCompatActivity {
         public void process(CaptureResult result) {
             Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
             Face[] faces = result.get(CaptureResult.STATISTICS_FACES);
-            if(faces != null && mode != null) {
-                Log.e("chehera mila", "faces : " + faces.length + " , mode : " + mode);
-            } else {
-                Log.e("Face", "Not found");
+
+            Face bestFace = null;
+            if(faces != null && faces.length > 0) {
+                bestFace = faces[0];
+                int maxx = bestFace.getScore();
+                for(int i=1;i<faces.length;i++){
+                    if(faces[i].getScore() > maxx){
+                        maxx = faces[i].getScore();
+                        bestFace = faces[i];
+                    }
+                }
             }
+
+            if(faces != null && mode != null) {
+                Log.e("Face found", "faces : " + faces.length + " , mode : " + mode);
+            }
+            //get the best possible face
         }
 
         @Override
@@ -177,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-
     }
 
     CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
