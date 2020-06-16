@@ -177,3 +177,6 @@ gradle-app.setting
 **/build/
 
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio,java,opencv,gradle
+
+# Credentials
+apikey.properties

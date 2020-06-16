@@ -1,17 +1,9 @@
 package com.example.miniproject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.content.res.Configuration;
-import android.graphics.ImageFormat;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -25,34 +17,22 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.Face;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
-import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class MainActivity extends AppCompatActivity {
@@ -88,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         Model model = new Model(this);
         model.start();
-        
+
         textureView = findViewById(R.id.textureView);
         captureButton = findViewById(R.id.captureButton);
 
