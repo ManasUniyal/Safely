@@ -5,7 +5,6 @@
       "sdkFolder": "C:\\Users\\DELL\\AppData\\Local\\Android\\Sdk",
       "isNativeCompilerSettingsCacheEnabled": false,
       "isBuildOnlyTargetAbiEnabled": true,
-      "ideBuildTargetAbi": "armeabi-v7a,armeabi",
       "splitsAbiFilterSet": [],
       "intermediatesFolder": "D:\\Mini Project\\app\\build\\intermediates",
       "gradleModulePathName": ":app",
@@ -49,7 +48,10 @@
     "gradleBuildOutputFolder": "D:\\Mini Project\\app\\.cxx\\cxx\\debug",
     "isDebuggableEnabled": true,
     "validAbiList": [
-      "ARMEABI_V7A"
+      "ARMEABI_V7A",
+      "ARM64_V8A",
+      "X86",
+      "X86_64"
     ],
     "buildTargetSet": []
   },
