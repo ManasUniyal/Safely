@@ -2,6 +2,7 @@ package com.example.miniproject;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //take picture
                 Toast.makeText(getApplicationContext(),"Image to be captured", Toast.LENGTH_LONG).show();
+                Intent mapsIntent = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivity(mapsIntent);
             }
         });
     }
