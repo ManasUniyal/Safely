@@ -1,16 +1,28 @@
 package com.example.miniproject;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.volley.Cache;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,7 +40,12 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import org.json.JSONObject;
+
+import java.net.URL;
 import java.util.Arrays;
+
+import static com.android.volley.Request.Method;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, PlaceSelectionListener {
 
@@ -40,6 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
+    private Button testVolleyButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +78,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
         autocompleteFragment.setOnPlaceSelectedListener(this);
 
+        testVolleyButton = findViewById(R.id.testVolleyButton);
+
     }
 
     @Override
@@ -68,6 +88,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         getLocationPermission();
         getDeviceLocation();
+    }
+
+    public void testVolley(View view) {
+//        int t1 = (int) System.currentTimeMillis();
+//        String url = "Https://www.google.com";
+        final String url = "https://maps.googleapis.com/maps/api/directions/json?origin=30.3165,78.0322&destination=28.7041,77.1025&sensor=false&key=" + BuildConfig.mapsAPIKey;
+
+        final Cache cache = VolleySingleton.getInstance(getBaseContext()).getCache();
+        final Cache.Entry entry = cache.get(url);
+        if(entry == null)
+        {
+            Log.e("Volley cache","Not cached");
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.e("Volley", response.toString());
+                            Cache.Entry newEntry = new Cache.Entry();
+                            newEntry.data = response.toString().getBytes();
+                            cache.put(url, newEntry);
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("Volley",error.toString());
+                }
+            });
+            VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+        } else {
+            Log.e("Volley cache","Cached");
+            //Do the desired work in UI thread
+        }
+//        int t2 = (int) System.currentTimeMillis();
+//        Log.e("Time taken",Integer.toString(t2-t1));
     }
 
     private void getDeviceLocation() {
