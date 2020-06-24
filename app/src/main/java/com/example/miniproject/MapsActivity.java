@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -101,8 +102,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     try {
                         newEntry.data = ObjectSerialiserDeserialiser.objToByte(response);
                         VolleySingleton.getInstance(getApplicationContext()).getCache().put(url, newEntry);
-                        setDirectionOnMap(newEntry.data);
-                    } catch (IOException | ClassNotFoundException e) {
+                        new SetDirectionOnMap().execute(newEntry.data);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -115,61 +116,116 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(routeRequest);
         } else {
             byte[] response = VolleySingleton.getInstance(getApplicationContext()).getCache().get(url).data;
+            new SetDirectionOnMap().execute(response);
+        }
+    }
+
+    private class SetDirectionOnMap extends AsyncTask<byte[], Void, PolylineOptions>{
+
+        @Override
+        protected PolylineOptions doInBackground(byte[]... bytes) {
+
+            byte[] response = bytes[0];
+            List<List<HashMap<String, String>>> result = null;
             try {
-                setDirectionOnMap(response);
+                result = (List<List<HashMap<String, String>>>) ObjectSerialiserDeserialiser.byteToObj((byte[]) response);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        }
-    }
+            ArrayList<LatLng> points;
+            PolylineOptions lineOptions = null;
 
-    private void setDirectionOnMap(Object response) throws IOException, ClassNotFoundException {
-        List<List<HashMap<String, String>>> result = (List<List<HashMap<String, String>>>) ObjectSerialiserDeserialiser.byteToObj((byte[]) response);
-        ArrayList<LatLng> points;
-        PolylineOptions lineOptions = null;
+            // Traversing through all the routes
+            for (int i = 0; i < result.size(); i++) {
+                points = new ArrayList<>();
+                lineOptions = new PolylineOptions();
 
-        // Traversing through all the routes
-        for (int i = 0; i < result.size(); i++) {
-            points = new ArrayList<>();
-            lineOptions = new PolylineOptions();
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
 
-            // Fetching i-th route
-            List<HashMap<String, String>> path = result.get(i);
+                // Fetching all the points in i-th route
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
 
-            // Fetching all the points in i-th route
-            for (int j = 0; j < path.size(); j++) {
-                HashMap<String, String> point = path.get(j);
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
 
-                double lat = Double.parseDouble(point.get("lat"));
-                double lng = Double.parseDouble(point.get("lng"));
-                LatLng position = new LatLng(lat, lng);
-
-                points.add(position);
-            }
-
-            // Adding all the points in the route to LineOptions
-            lineOptions.addAll(points);
-            lineOptions.width(10);
-            lineOptions.color(Color.RED);
-        }
-
-        // Drawing polyline in the Google Map for the i-th route
-        if(lineOptions != null) {
-            mMap.addPolyline(lineOptions);
-            final PolylineOptions finalLineOptions = lineOptions;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mMap.addPolyline(finalLineOptions);
+                    points.add(position);
                 }
-            });
+
+                // Adding all the points in the route to LineOptions
+                lineOptions.addAll(points);
+                lineOptions.width(10);
+                lineOptions.color(Color.RED);
+            }
+            return lineOptions;
         }
-        else {
-            Log.d(TAG,"without Polylines drawn");
+
+        @Override
+        protected void onPostExecute(PolylineOptions polylineOptions) {
+            if(polylineOptions != null) {
+                mMap.addPolyline(polylineOptions);
+                final PolylineOptions finalLineOptions = polylineOptions;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMap.addPolyline(finalLineOptions);
+                    }
+                });
+            } else {
+                Log.d(TAG,"without Polylines drawn");
+            }
         }
     }
+    
+//    private void setDirectionOnMap(Object response) throws IOException, ClassNotFoundException {
+//        List<List<HashMap<String, String>>> result = (List<List<HashMap<String, String>>>) ObjectSerialiserDeserialiser.byteToObj((byte[]) response);
+//        ArrayList<LatLng> points;
+//        PolylineOptions lineOptions = null;
+//
+//        // Traversing through all the routes
+//        for (int i = 0; i < result.size(); i++) {
+//            points = new ArrayList<>();
+//            lineOptions = new PolylineOptions();
+//
+//            // Fetching i-th route
+//            List<HashMap<String, String>> path = result.get(i);
+//
+//            // Fetching all the points in i-th route
+//            for (int j = 0; j < path.size(); j++) {
+//                HashMap<String, String> point = path.get(j);
+//
+//                double lat = Double.parseDouble(point.get("lat"));
+//                double lng = Double.parseDouble(point.get("lng"));
+//                LatLng position = new LatLng(lat, lng);
+//
+//                points.add(position);
+//            }
+//
+//            // Adding all the points in the route to LineOptions
+//            lineOptions.addAll(points);
+//            lineOptions.width(10);
+//            lineOptions.color(Color.RED);
+//        }
+//
+//        // Drawing polyline in the Google Map for the i-th route
+//        if(lineOptions != null) {
+//            mMap.addPolyline(lineOptions);
+//            final PolylineOptions finalLineOptions = lineOptions;
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    mMap.addPolyline(finalLineOptions);
+//                }
+//            });
+//        }
+//        else {
+//            Log.d(TAG,"without Polylines drawn");
+//        }
+//    }
 
 
     private void getDeviceLocation() {
