@@ -10,7 +10,7 @@ import com.android.volley.toolbox.Volley;
 public class VolleySingleton {
 
     private static VolleySingleton instance;
-    private RequestQueue requestQueue;
+    private static RequestQueue requestQueue;
     private static Context context;
 
     private VolleySingleton(Context context){
@@ -33,12 +33,12 @@ public class VolleySingleton {
     }
 
     public Cache getCache() {
-        if(requestQueue != null)
+        if(instance != null)
             return requestQueue.getCache();
         return null;
     }
 
-    public <String> void addToRequestQueue(Request<String> request) {
+    public void addToRequestQueue(Request request) {
         getRequestQueue().add(request);
     }
 

@@ -1,5 +1,7 @@
 package com.example.miniproject;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.android.volley.NetworkResponse;
@@ -27,16 +29,11 @@ public class GsonRequest extends Request {
     @Override
     protected Response parseNetworkResponse(NetworkResponse response) {
         try {
+            Log.e("GsonRequest","Not cached");
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-//            Gson gson = new Gson();
             JSONObject jsonObject = new JSONObject(json);
             DirectionsJSONParser jsonParser = new DirectionsJSONParser();
             List<List<HashMap<String, String>>> routes = jsonParser.parse(jsonObject);
-//            Type collectionType = new TypeToken<List<List<HashMap<String, String>>>>(){}.getType();
-//            Log.e("GsonRequest", json);
-//            List<List<HashMap<String, String>>> routes = gson.fromJson(json, collectionType);
-//            Cache.Entry routesCacheEntry = new Cache.Entry();
-//            routesCacheEntry.data = routes.toString().getBytes();
             return Response.success (routes, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));

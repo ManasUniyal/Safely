@@ -15,13 +15,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.android.volley.Cache;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -39,17 +35,10 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,6 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
     private Button testVolleyButton;
+    final String TAG = "Volley response from UI thread";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteFragment.setOnPlaceSelectedListener(this);
 
         testVolleyButton = findViewById(R.id.testVolleyButton);
-
+        VolleySingleton.getInstance(getApplicationContext()).getCache().clear();
     }
 
     @Override
@@ -98,89 +88,87 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void testVolley(View view) {
 
-//        int t1 = (int) System.currentTimeMillis();
-//        String url = "Https://www.google.com";
-//        final String url = "https://maps.googleapis.com/maps/api/directions/json?origin=30.3165,78.0322&destination=28.7041,77.1025&sensor=false&key=" + BuildConfig.mapsAPIKey;
+        Log.e("TAG","Test volley button pressed");
 
-//        final Cache cache = VolleySingleton.getInstance(getBaseContext()).getCache();
-//        final Cache.Entry entry = cache.get(url);
-//        if(entry == null)
-//        {
-//            Log.e("Volley cache","Not cached");
-//            List<List<HashMap<String, String>>> routeRquest = new Gson
-//                    (Request.Method.GET, url, null,
-//                    new Response.Listener<JSONObject>() {
-//                        @Override
-//                        public void onResponse(JSONObject response) {
-//                            Log.e("Volley", response.toString());
-//                        }
-//                    }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    Log.e("Volley",error.toString());
-//                }
-//            }) {
-//                @Override
-//
-//            };
-//            VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-//        } else {
-//            Log.e("Volley cache","Cached");
-//        }
-//        int t2 = (int) System.currentTimeMillis();
-//        Log.e("Time taken",Integer.toString(t2-t1));
-
-        final String TAG = "Volley response from UI thread";
-        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=30.3165,78.0322&destination=28.7041,77.1025&sensor=false&key=" + BuildConfig.mapsAPIKey;
-        GsonRequest routeRequest = new GsonRequest(Request.Method.GET, url, new Response.Listener() {
-            @Override
-            public void onResponse(Object response) {
-                Log.e(TAG, response.toString());
-
-                List<List<HashMap<String, String>>> result = (List<List<HashMap<String, String>>>)response;
-                ArrayList<LatLng> points;
-                PolylineOptions lineOptions = null;
-
-                // Traversing through all the routes
-                for (int i = 0; i < result.size(); i++) {
-                    points = new ArrayList<>();
-                    lineOptions = new PolylineOptions();
-
-                    // Fetching i-th route
-                    List<HashMap<String, String>> path = result.get(i);
-
-                    // Fetching all the points in i-th route
-                    for (int j = 0; j < path.size(); j++) {
-                        HashMap<String, String> point = path.get(j);
-
-                        double lat = Double.parseDouble(point.get("lat"));
-                        double lng = Double.parseDouble(point.get("lng"));
-                        LatLng position = new LatLng(lat, lng);
-
-                        points.add(position);
+        final String url = "https://maps.googleapis.com/maps/api/directions/json?origin=30.3165,78.0325&destination=28.7041,77.1025&sensor=false&key=" + BuildConfig.mapsAPIKey;
+        Cache.Entry entry = VolleySingleton.getInstance(getApplicationContext()).getCache().get(url);
+        if(entry == null || entry.data == null) {
+            GsonRequest routeRequest = new GsonRequest(Request.Method.GET, url, new Response.Listener() {
+                @Override
+                public void onResponse(Object response) {
+                    Log.e("Data", response.toString());
+                    Cache.Entry newEntry = new Cache.Entry();
+                    try {
+                        newEntry.data = ObjectSerialiserDeserialiser.objToByte(response);
+                        VolleySingleton.getInstance(getApplicationContext()).getCache().put(url, newEntry);
+                        setDirectionOnMap(newEntry.data);
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
                     }
-
-                    // Adding all the points in the route to LineOptions
-                    lineOptions.addAll(points);
-                    lineOptions.width(10);
-                    lineOptions.color(Color.RED);
                 }
-
-                // Drawing polyline in the Google Map for the i-th route
-                if(lineOptions != null) {
-                    mMap.addPolyline(lineOptions);
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "Volley");
                 }
-                else {
-                    Log.d(TAG,"without Polylines drawn");
-                }
+            });
+            VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(routeRequest);
+        } else {
+            byte[] response = VolleySingleton.getInstance(getApplicationContext()).getCache().get(url).data;
+            try {
+                setDirectionOnMap(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Volley");
+        }
+    }
+
+    private void setDirectionOnMap(Object response) throws IOException, ClassNotFoundException {
+        List<List<HashMap<String, String>>> result = (List<List<HashMap<String, String>>>) ObjectSerialiserDeserialiser.byteToObj((byte[]) response);
+        ArrayList<LatLng> points;
+        PolylineOptions lineOptions = null;
+
+        // Traversing through all the routes
+        for (int i = 0; i < result.size(); i++) {
+            points = new ArrayList<>();
+            lineOptions = new PolylineOptions();
+
+            // Fetching i-th route
+            List<HashMap<String, String>> path = result.get(i);
+
+            // Fetching all the points in i-th route
+            for (int j = 0; j < path.size(); j++) {
+                HashMap<String, String> point = path.get(j);
+
+                double lat = Double.parseDouble(point.get("lat"));
+                double lng = Double.parseDouble(point.get("lng"));
+                LatLng position = new LatLng(lat, lng);
+
+                points.add(position);
             }
-        });
-        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(routeRequest);
+
+            // Adding all the points in the route to LineOptions
+            lineOptions.addAll(points);
+            lineOptions.width(10);
+            lineOptions.color(Color.RED);
+        }
+
+        // Drawing polyline in the Google Map for the i-th route
+        if(lineOptions != null) {
+            mMap.addPolyline(lineOptions);
+            final PolylineOptions finalLineOptions = lineOptions;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mMap.addPolyline(finalLineOptions);
+                }
+            });
+        }
+        else {
+            Log.d(TAG,"without Polylines drawn");
+        }
     }
 
 
