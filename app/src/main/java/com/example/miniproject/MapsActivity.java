@@ -6,9 +6,11 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -21,6 +23,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int DEFAULT_ZOOM = 15;
     private Button testVolleyButton;
     final String TAG = "Volley response from UI thread";
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +90,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("Map","Loaded");
         mMap = googleMap;
         getLocationPermission();
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         getDeviceLocation();
     }
 
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            List<Location> locationList = locationResult.getLocations();
+            if(locationList.size() > 0) {
+                Location location = locationList.get(locationList.size() - 1);
+                Log.e("Location", location.toString());
+            }
+        }
+    };
+
+    //TODO: Use proper naming for class GsonRequest
     public void testVolley(View view) {
 
         Log.e("TAG","Test volley button pressed");
@@ -180,53 +202,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-    
-//    private void setDirectionOnMap(Object response) throws IOException, ClassNotFoundException {
-//        List<List<HashMap<String, String>>> result = (List<List<HashMap<String, String>>>) ObjectSerialiserDeserialiser.byteToObj((byte[]) response);
-//        ArrayList<LatLng> points;
-//        PolylineOptions lineOptions = null;
-//
-//        // Traversing through all the routes
-//        for (int i = 0; i < result.size(); i++) {
-//            points = new ArrayList<>();
-//            lineOptions = new PolylineOptions();
-//
-//            // Fetching i-th route
-//            List<HashMap<String, String>> path = result.get(i);
-//
-//            // Fetching all the points in i-th route
-//            for (int j = 0; j < path.size(); j++) {
-//                HashMap<String, String> point = path.get(j);
-//
-//                double lat = Double.parseDouble(point.get("lat"));
-//                double lng = Double.parseDouble(point.get("lng"));
-//                LatLng position = new LatLng(lat, lng);
-//
-//                points.add(position);
-//            }
-//
-//            // Adding all the points in the route to LineOptions
-//            lineOptions.addAll(points);
-//            lineOptions.width(10);
-//            lineOptions.color(Color.RED);
-//        }
-//
-//        // Drawing polyline in the Google Map for the i-th route
-//        if(lineOptions != null) {
-//            mMap.addPolyline(lineOptions);
-//            final PolylineOptions finalLineOptions = lineOptions;
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mMap.addPolyline(finalLineOptions);
-//                }
-//            });
-//        }
-//        else {
-//            Log.d(TAG,"without Polylines drawn");
-//        }
-//    }
-
 
     private void getDeviceLocation() {
         try {
@@ -260,11 +235,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGranted = true;
+            mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+            mMap.setMyLocationEnabled(true);
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
 
+    //TODO: Handle the case when user denies permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         locationPermissionGranted = false;
@@ -272,6 +250,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     locationPermissionGranted = true;
+                    mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                    mMap.setMyLocationEnabled(true);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Location permission denied", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -285,5 +267,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onError(@NonNull Status status) {
         Log.e("Place searched", status.toString());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mFusedLocationProviderClient != null) {
+            mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+        }
     }
 }
