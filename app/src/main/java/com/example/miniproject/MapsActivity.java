@@ -68,6 +68,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Polyline line = null;
     private Marker sourceMarker = null;
     private Marker destinationMarker = null;
+    private LatLng previousLocation;
+    private long previousTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Location location = locationList.get(locationList.size() - 1);
                 LatLng latLngSource = new LatLng(location.getLatitude(), location.getLongitude());
                 source = latLngSource;
+                double speed = getSpeed(source, previousLocation);
+                Log.e("Speed", String.valueOf(speed));
+                previousLocation = source;
+                previousTime = System.currentTimeMillis();
                 Log.e("Location", source.toString());
                 runOnUiThread(new Runnable() {
                     @Override
@@ -128,6 +134,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     };
+
+    private double getSpeed(LatLng newPosition, LatLng oldPosition) {
+        assert (newPosition!=null && oldPosition!=null);
+        long endTime = System.currentTimeMillis();
+        long time = endTime - previousTime;
+        float[] results = new float[1];
+        Location.distanceBetween(oldPosition.latitude, oldPosition.longitude, newPosition.latitude, newPosition.longitude, results);
+        final double speed = (results[0]/time) * 1000 * 3.6;  //speed in km/h
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), String.valueOf(Math.floor(speed)), Toast.LENGTH_LONG).show();
+            }
+        });
+        return speed;
+    }
 
     public void testVolley(View view) {
         Log.e("TAG","Test volley button pressed");
@@ -273,6 +295,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             lastKnownLocation = task.getResult();
                             LatLng latLngSource = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                             source = latLngSource;
+                            previousLocation = source;
+                            previousTime = System.currentTimeMillis();
 //                            Log.e("Last location", lastKnownLocation.toString());
                             if (lastKnownLocation != null) {
                                 if(sourceMarker != null)
@@ -348,6 +372,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onResume();
         if (mFusedLocationProviderClient != null){
             mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+            previousTime = System.currentTimeMillis();
         }
     }
 }
