@@ -32,7 +32,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -61,6 +63,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button testVolleyButton;
     final String TAG = "Volley response from UI thread";
     private LocationRequest mLocationRequest;
+    private LatLng source;
+    private LatLng destination;
+    private Polyline line = null;
+    private Marker sourceMarker = null;
+    private Marker destinationMarker = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +97,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("Map","Loaded");
         mMap = googleMap;
         getLocationPermission();
+        getDeviceLocation();
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(10000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-        getDeviceLocation();
     }
 
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -103,17 +111,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             List<Location> locationList = locationResult.getLocations();
             if(locationList.size() > 0) {
                 Location location = locationList.get(locationList.size() - 1);
-                Log.e("Location", location.toString());
+                LatLng latLngSource = new LatLng(location.getLatitude(), location.getLongitude());
+                source = latLngSource;
+                Log.e("Location", source.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(sourceMarker != null)
+                            sourceMarker.remove();
+                        if(lastKnownLocation == null)
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source, DEFAULT_ZOOM));
+                        sourceMarker = mMap.addMarker(new MarkerOptions().position(source).title("Current location"));
+                        Log.e("Marker","Added at source");
+                    }
+                });
             }
         }
     };
 
-    //TODO: Use proper naming for class GsonRequest
     public void testVolley(View view) {
-
         Log.e("TAG","Test volley button pressed");
+        drawRoute(source, destination);
+    }
 
-        final String url = "https://maps.googleapis.com/maps/api/directions/json?origin=30.3165,78.0325&destination=28.7041,77.1025&sensor=false&key=" + BuildConfig.mapsAPIKey;
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
+
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // API key
+        String key = "key=" + BuildConfig.mapsAPIKey;
+
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + key;
+
+        // Output format
+        String output = "json";
+
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+
+        return url;
+    }
+
+    //TODO: Use proper naming for class GsonRequest
+    public void drawRoute(LatLng source, LatLng destination) {
+
+//        final String url = "https://maps.googleapis.com/maps/api/directions/json?origin=30.3165,78.0325&destination=28.7041,77.1025&sensor=false&key=" + BuildConfig.mapsAPIKey;
+        final String url = getDirectionsUrl(source, destination);
         Cache.Entry entry = VolleySingleton.getInstance(getApplicationContext()).getCache().get(url);
         if(entry == null || entry.data == null) {
             GsonRequest routeRequest = new GsonRequest(Request.Method.GET, url, new Response.Listener() {
@@ -189,12 +240,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(PolylineOptions polylineOptions) {
             if(polylineOptions != null) {
-                mMap.addPolyline(polylineOptions);
+//                mMap.clear();
+                if(line != null)
+                    line.remove();
                 final PolylineOptions finalLineOptions = polylineOptions;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mMap.addPolyline(finalLineOptions);
+                        if(line != null)
+                            line.remove();
+                        line = mMap.addPolyline(finalLineOptions);
+                        if(destinationMarker != null)
+                            destinationMarker.remove();
+                        destinationMarker = mMap.addMarker(new MarkerOptions().position(destination).title("Destination"));
                     }
                 });
             } else {
@@ -213,13 +271,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             lastKnownLocation = task.getResult();
+                            LatLng latLngSource = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                            source = latLngSource;
 //                            Log.e("Last location", lastKnownLocation.toString());
                             if (lastKnownLocation != null) {
+                                if(sourceMarker != null)
+                                    sourceMarker.remove();
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(lastKnownLocation.getLatitude(),
                                                 lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                                mMap.addMarker(new MarkerOptions().position(new LatLng(lastKnownLocation.getLatitude(),
+                                sourceMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(lastKnownLocation.getLatitude(),
                                         lastKnownLocation.getLongitude())).title("Current location"));
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Getting current location", Toast.LENGTH_LONG).show();
                             }
                         } else {
                             Log.e("Device last known location","Not found");
@@ -262,6 +326,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onPlaceSelected(@NonNull Place place) {
         Log.e("Place searched", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
+        destination = place.getLatLng();
+        drawRoute(source, destination);
     }
 
     @Override
@@ -274,6 +340,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onPause();
         if(mFusedLocationProviderClient != null) {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mFusedLocationProviderClient != null){
+            mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         }
     }
 }
