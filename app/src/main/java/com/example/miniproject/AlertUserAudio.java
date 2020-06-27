@@ -15,10 +15,11 @@ public class AlertUserAudio {
     }
 
     public static void endWarning() {
-        if(mediaPlayer != null && mediaPlayer.isPlaying())
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
+            mediaPlayer.reset();
+            mediaPlayer.release();
+        }
         Log.e("Media Player", "Stopped");
-        mediaPlayer.reset();
-        mediaPlayer.release();
     }
 }
