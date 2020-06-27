@@ -41,17 +41,4 @@
         map:layout_constraintTop_toTopOf="parent"
         tools:context=".MapsActivity" />
 
-    <Button
-        android:id="@+id/testVolleyButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="200dp"
-        android:onClick="testVolley"
-        android:text="Test Volley"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.5"
-        map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toBottomOf="@+id/map" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

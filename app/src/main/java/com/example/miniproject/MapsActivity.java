@@ -8,8 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -60,7 +58,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
-    private Button testVolleyButton;
     final String TAG = "Volley response from UI thread";
     private LocationRequest mLocationRequest;
     private LatLng source;
@@ -69,7 +66,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker sourceMarker = null;
     private Marker destinationMarker = null;
     private LatLng previousLocation;
-    private long previousTime;
+    private static final int DEFAULT_TIME_GAP = 10000;
+
+//    private long previousTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +89,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
         autocompleteFragment.setOnPlaceSelectedListener(this);
 
-        testVolleyButton = findViewById(R.id.testVolleyButton);
         VolleySingleton.getInstance(getApplicationContext()).getCache().clear();
     }
 
@@ -101,8 +99,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getLocationPermission();
         getDeviceLocation();
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(10000);
+        mLocationRequest.setInterval(DEFAULT_TIME_GAP);
+        mLocationRequest.setFastestInterval(DEFAULT_TIME_GAP);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
     }
@@ -115,10 +113,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Location location = locationList.get(locationList.size() - 1);
                 LatLng latLngSource = new LatLng(location.getLatitude(), location.getLongitude());
                 source = latLngSource;
-                double speed = getSpeed(source, previousLocation);
+                int speed = getSpeed(source, previousLocation);
+                SpeedLimitManager.getInstance(getApplicationContext()).update(source,speed);
                 Log.e("Speed", String.valueOf(speed));
                 previousLocation = source;
-                previousTime = System.currentTimeMillis();
+//                previousTime = System.currentTimeMillis();
                 Log.e("Location", source.toString());
                 runOnUiThread(new Runnable() {
                     @Override
@@ -135,25 +134,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    private double getSpeed(LatLng newPosition, LatLng oldPosition) {
+    private void checkSpeed() {
+    }
+
+    private int getSpeed(LatLng newPosition, LatLng oldPosition) {
         assert (newPosition!=null && oldPosition!=null);
-        long endTime = System.currentTimeMillis();
-        long time = endTime - previousTime;
+//        long endTime = System.currentTimeMillis();
+//        long time = endTime - previousTime;
         float[] results = new float[1];
         Location.distanceBetween(oldPosition.latitude, oldPosition.longitude, newPosition.latitude, newPosition.longitude, results);
-        final double speed = (results[0]/time) * 1000 * 3.6;  //speed in km/h
+        final double speed = (results[0]/DEFAULT_TIME_GAP) * 1000 * 3.6;  //speed in km/h
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(getApplicationContext(), String.valueOf(Math.floor(speed)), Toast.LENGTH_LONG).show();
             }
         });
-        return speed;
-    }
-
-    public void testVolley(View view) {
-        Log.e("TAG","Test volley button pressed");
-        drawRoute(source, destination);
+        Log.e("Speed", String.valueOf(speed));
+        return (int) Math.floor(speed);
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
@@ -296,7 +294,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             LatLng latLngSource = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                             source = latLngSource;
                             previousLocation = source;
-                            previousTime = System.currentTimeMillis();
+//                            previousTime = System.currentTimeMillis();
 //                            Log.e("Last location", lastKnownLocation.toString());
                             if (lastKnownLocation != null) {
                                 if(sourceMarker != null)
@@ -372,7 +370,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onResume();
         if (mFusedLocationProviderClient != null){
             mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-            previousTime = System.currentTimeMillis();
+//            previousTime = System.currentTimeMillis();
         }
     }
 }
