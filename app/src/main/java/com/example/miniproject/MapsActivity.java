@@ -363,6 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(mFusedLocationProviderClient != null) {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
+        AlertUserAudio.endWarning();
     }
 
     @Override
@@ -373,4 +374,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            previousTime = System.currentTimeMillis();
         }
     }
+
 }

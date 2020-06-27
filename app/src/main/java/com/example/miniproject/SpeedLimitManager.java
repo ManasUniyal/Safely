@@ -1,6 +1,7 @@
 package com.example.miniproject;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -28,9 +29,10 @@ public class SpeedLimitManager {
     private static String locationString;
     private static final int QUEUE_CAPACITY = 20;
     private static final int DEFAULT_SPEED_LIMIT = 45;
+    private static MediaPlayer mediaPlayer;
 
     private SpeedLimitManager(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         locationsQueue = new LinkedList<>();
         locationString = new String();
         roadSpeedLimit = DEFAULT_SPEED_LIMIT;
@@ -134,7 +136,7 @@ public class SpeedLimitManager {
     }
 
     private void alertUser() {
-        //TODO: Play sound, if condition matches (snooze after 1 minute)
-        //TODO: Make entry into database, if condition matches (to be decided)
+        AlertUserAudio.startWarning(context);
+        //TODO: Make entry into database, if condition satisfies (to be decided)
     }
 }
