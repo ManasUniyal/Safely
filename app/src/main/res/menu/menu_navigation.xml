@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/camera"
+        android:title="Camera"
+        android:icon="@drawable/ic_camera" />
+    <item
+        android:id="@+id/maps"
+        android:title="Maps"
+        android:icon="@drawable/ic_maps" />
+    <item
+        android:id="@+id/logs"
+        android:title="Logs"
+        android:icon="@drawable/ic_logs" />
+
+</menu>
