@@ -43,7 +43,6 @@ import java.util.concurrent.Semaphore;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button captureButton;
     private TextureView textureView;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
@@ -77,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         model.start();
 
         textureView = findViewById(R.id.textureView);
-        captureButton = findViewById(R.id.captureButton);
 
         //TODO: Handle back button
         bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -104,16 +102,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         textureView.setSurfaceTextureListener(textureListener);
-
-        captureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //take picture
-                Toast.makeText(getApplicationContext(),"Image to be captured", Toast.LENGTH_LONG).show();
-                Intent mapsIntent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(mapsIntent);
-            }
-        });
     }
 
     //TODO: TO be implemented in a separate thread and in a different class
