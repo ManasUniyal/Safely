@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -71,7 +73,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng previousLocation;
     private static final int DEFAULT_TIME_GAP = 10000;
     private BottomNavigationView bottomNavigationView;
-
+    private Button journeyStateButton;
 //    private long previousTime;
 
     @Override
@@ -117,6 +119,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
+        journeyStateButton = findViewById(R.id.journeyStateButton);
+        Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+        journeyStateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Common.getInstance().toggleJourneyState();
+                Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+            }
+        });
+
     }
 
     @Override

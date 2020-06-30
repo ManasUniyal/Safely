@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationMenu;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
-
     private String cameraID;
     private CameraDevice cameraDevice;
     private CameraCaptureSession cameraCaptureSession;
@@ -66,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private HandlerThread mBackgroundThread;
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
     private BottomNavigationView bottomNavigationView;
+    private Button journeyStateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +101,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         textureView.setSurfaceTextureListener(textureListener);
+
+        journeyStateButton = findViewById(R.id.journeyStateButton);
+        Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+        journeyStateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Common.getInstance().toggleJourneyState();
+                Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+            }
+        });
+
     }
+
 
     //TODO: TO be implemented in a separate thread and in a different class
 
