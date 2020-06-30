@@ -6,7 +6,7 @@
  * For conditions of distribution and use, see the accompanying README file.
  *
  * This file exists to provide a single place to fix any problems with
- * including the wrong system include files.  (Common problems are taken
+ * including the wrong system include files.  (JourneyStatus problems are taken
  * care of by the standard jconfig symbols, but on really weird systems
  * you may have to edit this file.)
  *

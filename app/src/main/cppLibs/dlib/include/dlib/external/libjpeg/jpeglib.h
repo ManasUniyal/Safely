@@ -236,7 +236,7 @@ typedef enum {
 } J_DITHER_MODE;
 
 
-/* Common fields between JPEG compression and decompression master structs. */
+/* JourneyStatus fields between JPEG compression and decompression master structs. */
 
 #define jpeg_common_fields \
   struct jpeg_error_mgr * err;	/* Error handler module */\

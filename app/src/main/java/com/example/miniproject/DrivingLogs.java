@@ -45,12 +45,12 @@ public class DrivingLogs extends AppCompatActivity {
         });
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+        JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, DrivingLogs.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.getInstance().toggleJourneyState();
-                Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+                JourneyStatus.getInstance().toggleJourneyState();
+                JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, DrivingLogs.this);
             }
         });
 

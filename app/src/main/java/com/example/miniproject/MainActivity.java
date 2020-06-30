@@ -103,12 +103,12 @@ public class MainActivity extends AppCompatActivity {
         textureView.setSurfaceTextureListener(textureListener);
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+        JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, MainActivity.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.getInstance().toggleJourneyState();
-                Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+                JourneyStatus.getInstance().toggleJourneyState();
+                JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, MainActivity.this);
             }
         });
 
@@ -349,4 +349,5 @@ public class MainActivity extends AppCompatActivity {
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
 
+    //TODO: Add method for checking internet connection and then performed the task appropriately
 }

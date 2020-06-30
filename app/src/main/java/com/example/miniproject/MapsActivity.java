@@ -121,12 +121,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+        JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, MapsActivity.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Common.getInstance().toggleJourneyState();
-                Common.getInstance().setJourneyStateButtonView(journeyStateButton);
+                JourneyStatus.getInstance().toggleJourneyState();
+                JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, MapsActivity.this);
             }
         });
 

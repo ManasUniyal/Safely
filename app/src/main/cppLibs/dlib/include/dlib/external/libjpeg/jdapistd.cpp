@@ -85,7 +85,7 @@ jpeg_start_decompress (j_decompress_ptr cinfo)
 
 /*
  * Set up for an output pass, and perform any dummy pass(es) needed.
- * Common subroutine for jpeg_start_decompress and jpeg_start_output.
+ * JourneyStatus subroutine for jpeg_start_decompress and jpeg_start_output.
  * Entry: global_state = DSTATE_PRESCAN only if previously suspended.
  * Exit: If done, returns TRUE and sets global_state for proper output mode.
  *       If suspended, returns FALSE and sets global_state = DSTATE_PRESCAN.

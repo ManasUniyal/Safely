@@ -426,7 +426,7 @@ VSX_FINLINE(vec_udword2) vec_ctulo(const vec_float4& a)
 #endif // CLANG VSX compatibility
 
 /*
- * Common GCC, CLANG compatibility
+ * JourneyStatus GCC, CLANG compatibility
 **/
 #if defined(__GNUG__) && !defined(__IBMCPP__)
 
@@ -480,7 +480,7 @@ VSX_IMPL_CONV_EVEN_2_4(vec_uint4,  vec_double2, vec_ctu, vec_ctuo)
     VSX_IMPL_CONV_2VARIANT(vec_dword2, vec_double2, vec_cts, vec_ctsl)
 #endif // Eigen
 
-#endif // Common GCC, CLANG compatibility
+#endif // JourneyStatus GCC, CLANG compatibility
 
 /*
  * XLC VSX compatibility

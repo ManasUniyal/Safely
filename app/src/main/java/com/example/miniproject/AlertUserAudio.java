@@ -14,6 +14,7 @@ public class AlertUserAudio {
         mediaPlayer.start();
     }
 
+    //TODO: Handle bug, app crashes sometimes due to endWarning() method
     public static void endWarning() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
