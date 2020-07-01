@@ -1,5 +1,6 @@
 package com.example.miniproject;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +30,23 @@ public class SummaryLogsAdapter extends RecyclerView.Adapter<SummaryLogsAdapter.
     @Override
     public void onBindViewHolder(@NonNull SummaryLogsViewHolder holder, int position) {
         SummaryLog summaryLog = summaryLogList.get(position);
-        holder.textViewOverSpeedCount.setText("OVER SPEED COUNT: " + summaryLog.getOverSpeedCount());
-        holder.textViewDrowsinessCount.setText("DROWSINESS COUNT: " + summaryLog.getDrowsinessCount());
-        holder.textViewStartTime.setText("START TIME: " + summaryLog.getStartTime());
-        holder.textViewEndTime.setText("END TIME: " + summaryLog.getEndTime());
-        holder.textViewDistance.setText("DISTANCE: " + summaryLog.getDistance());
-        holder.textViewDuration.setText("DURATION: " +  summaryLog.getDuration());
+        holder.textViewOverSpeedCount.setText("Over Speed: " + summaryLog.getOverSpeedCount());
+        if ((summaryLog.getOverSpeedCount() > 0)) {
+            holder.textViewOverSpeedCount.setBackgroundColor(Color.parseColor("#db4437"));
+        } else {
+            holder.textViewOverSpeedCount.setBackgroundColor(Color.parseColor("#2196F3"));
+        }
+        holder.textViewDrowsinessCount.setText("Drowsiness: " + summaryLog.getDrowsinessCount());
+        if ((summaryLog.getDrowsinessCount() > 0)) {
+            holder.textViewDrowsinessCount.setBackgroundColor(Color.parseColor("#db4437"));
+        } else {
+            holder.textViewDrowsinessCount.setBackgroundColor(Color.parseColor("#2196F3"));
+        }
+
+        holder.textViewStartTime.setText("Start Time\n" + summaryLog.getStartTime());
+        holder.textViewEndTime.setText("End Time\n" + summaryLog.getEndTime());
+        holder.textViewDistance.setText("Distance \n" + String.format("%.2f",summaryLog.getDistance()) + " Km");
+        holder.textViewDuration.setText("Duration \n" +  summaryLog.getDuration() + " Hrs");
     }
 
     @Override

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">@color/quantum_black_100</color>
+    <color name="colorPrimaryDark">@color/quantum_grey800</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="dark_green">#2196F3</color>
     <color name="blue">#00008B</color>
 </resources>
