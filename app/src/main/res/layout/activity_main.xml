@@ -20,7 +20,7 @@
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:itemBackground="@color/blue"
+        app:itemBackground="@color/quantum_grey800"
         app:itemIconTint="@drawable/selector"
         app:itemTextColor="@drawable/selector"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -33,6 +33,8 @@
         android:id="@+id/journeyStateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/quantum_white_100"
+        android:backgroundTint="@color/dark_green"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
