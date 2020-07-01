@@ -1,20 +1,25 @@
 package com.example.miniproject;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class DrivingLogs extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private Button journeyStateButton;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,14 @@ public class DrivingLogs extends AppCompatActivity {
             }
         });
 
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        List<SummaryLog> summaryLogList = DataBaseHelper.getInstance(DrivingLogs.this).getAllSummaryLogs();
+        SummaryLogsAdapter summaryLogsAdapter = new SummaryLogsAdapter(summaryLogList);
+        recyclerView.setAdapter(summaryLogsAdapter);
+
         journeyStateButton = findViewById(R.id.journeyStateButton);
         JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, DrivingLogs.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +66,8 @@ public class DrivingLogs extends AppCompatActivity {
                 JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, DrivingLogs.this);
             }
         });
+
+
 
     }
 }

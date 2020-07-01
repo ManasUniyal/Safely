@@ -81,38 +81,46 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUMMARY_LOGS);
     }
 
-    public void insertOuterTable(SummaryLogs summaryLogs) {
+    public void insertSummaryLog(SummaryLog summaryLog) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_START_TIME, summaryLogs.getStartTime());
-        values.put(KEY_END_TIME, summaryLogs.getEndTime());
-        values.put(KEY_DISTANCE, summaryLogs.getDistance());
-        values.put(KEY_OVER_SPEED_COUNT, summaryLogs.getOverSpeedCount());
-        values.put(KEY_DROWSINESS_COUNT, summaryLogs.getDrowsinessCount());
+        values.put(KEY_START_TIME, summaryLog.getStartTime());
+        values.put(KEY_END_TIME, summaryLog.getEndTime());
+        values.put(KEY_DISTANCE, summaryLog.getDistance());
+        values.put(KEY_OVER_SPEED_COUNT, summaryLog.getOverSpeedCount());
+        values.put(KEY_DROWSINESS_COUNT, summaryLog.getDrowsinessCount());
         long val = db.insert(TABLE_SUMMARY_LOGS, null, values);
-
         Log.e(TAG,String.valueOf(val));
     }
 
-    public List<SummaryLogs> getAllOuterTableEntries() {
-        List<SummaryLogs> summaryLogsList = new ArrayList<SummaryLogs>();
+    public List<SummaryLog> getAllSummaryLogs() {
+        List<SummaryLog> summaryLogList = new ArrayList<SummaryLog>();
         String selectQuery = "SELECT  * FROM " + TABLE_SUMMARY_LOGS;
         Log.e(TAG, selectQuery);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cur = db.rawQuery(selectQuery, null);
         if (cur.moveToFirst()) {
             do {
-                SummaryLogs summaryLogsObject = new SummaryLogs();
-                Log.e("ID", String.valueOf(cur.getInt(cur.getColumnIndex(KEY_ID))));
-                summaryLogsObject.setStartTime(cur.getString(cur.getColumnIndex(KEY_START_TIME)));
-                summaryLogsObject.setEndTime(cur.getString(cur.getColumnIndex(KEY_END_TIME)));
-                summaryLogsObject.setDistance((cur.getDouble(cur.getColumnIndex(KEY_DISTANCE))));
-                summaryLogsObject.setOverSpeedCount(cur.getInt(cur.getColumnIndex(KEY_OVER_SPEED_COUNT)));
-                summaryLogsObject.setDrowsinessCount(cur.getInt(cur.getColumnIndex(KEY_DROWSINESS_COUNT)));
-                summaryLogsList.add(summaryLogsObject);
+
+                SummaryLog summaryLogObject = new SummaryLog();
+//                Log.e("ID", String.valueOf(cur.getInt(cur.getColumnIndex(KEY_ID))));
+                summaryLogObject.setStartTime(cur.getString(cur.getColumnIndex(KEY_START_TIME)));
+                summaryLogObject.setEndTime(cur.getString(cur.getColumnIndex(KEY_END_TIME)));
+                summaryLogObject.setDistance((cur.getDouble(cur.getColumnIndex(KEY_DISTANCE))));
+                summaryLogObject.setOverSpeedCount(cur.getInt(cur.getColumnIndex(KEY_OVER_SPEED_COUNT)));
+                summaryLogObject.setDrowsinessCount(cur.getInt(cur.getColumnIndex(KEY_DROWSINESS_COUNT)));
+
+                summaryLogList.add(summaryLogObject);
+
+                Log.e("Start time", summaryLogObject.getStartTime());
+                Log.e("End time", summaryLogObject.getEndTime());
+                Log.e("Distance", String.valueOf(summaryLogObject.getDistance()));
+                Log.e("Over speed count", String.valueOf(summaryLogObject.getOverSpeedCount()));
+                Log.e("Drowsiness count", String.valueOf(summaryLogObject.getDrowsinessCount()));
+
             } while (cur.moveToNext());
         }
-        return summaryLogsList;
+        return summaryLogList;
     }
 
     public void closeDB() {

@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 public class JourneyStatus {
@@ -54,6 +53,7 @@ public class JourneyStatus {
         journeyState ^= 1;
     }
 
+    //TODO: Whenever the journey starts or ends, intend it to the maps activity
     public void setJourneyStateButtonView(View view, Context context) {
         final Button btn = (Button) view;
         if(getJourneyState() == JOURNEY_NOT_STARTED) {
@@ -74,14 +74,15 @@ public class JourneyStatus {
                 }
             });
         }
-//        DataBaseHelper.getInstance(context).insertOuterTable(new SummaryLogs(getDate(System.currentTimeMillis()), getDate(System.currentTimeMillis()+10000), 10.2, 1, 0));
+    }
+
+    //        DataBaseHelper.getInstance(context).insertOuterTable(new SummaryLogs(getDate(System.currentTimeMillis()), getDate(System.currentTimeMillis()+10000), 10.2, 1, 0));
 //        SummaryLogs obj = ((List<SummaryLogs>) DataBaseHelper.getInstance(context).getAllOuterTableEntries()).get(0);
 //        Log.e("Start time", obj.getStartTime());
 //        Log.e("End time", obj.getEndTime());
 //        Log.e("Distance", String.valueOf(obj.getDistance()));
 //        Log.e("Over speed count", String.valueOf(obj.getOverSpeedCount()));
 //        Log.e("Drowsiness count", String.valueOf(obj.getDrowsinessCount()));
-    }
 
     private String getDate(long time) {
         Calendar cal = Calendar.getInstance(Locale.getDefault());

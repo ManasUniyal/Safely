@@ -1,23 +1,23 @@
 package com.example.miniproject;
 
-public class SummaryLogs {
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+public class SummaryLog {
 
     private String startTime;
     private String endTime;
     private double distance;
     private int overSpeedCount;
     private int drowsinessCount;
-    private long duration;
 
-    //TODO: Think about handling this for duration of journey while using recycler view
-//    public int getDuration() {
-//        return duration;
-//    }
-
-    public SummaryLogs() {
+    public SummaryLog() {
     }
 
-    public SummaryLogs(String startTime, String endTime, double distance, int overSpeedCount, int drowsinessCount) {
+    public SummaryLog(String startTime, String endTime, double distance, int overSpeedCount, int drowsinessCount) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.distance = distance;
@@ -65,4 +65,20 @@ public class SummaryLogs {
         this.drowsinessCount = drowsinessCount;
     }
 
+    public String getDuration() {
+
+        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        long duration = 0;
+        try {
+            Date startDate = formatter.parse(startTime);
+            Date endDate = formatter.parse(endTime);
+            duration = endDate.getTime() - startDate.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(duration),
+                TimeUnit.MILLISECONDS.toMinutes(duration) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(duration)),
+                TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+    }
 }
