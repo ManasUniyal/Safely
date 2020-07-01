@@ -3,12 +3,15 @@ package com.example.miniproject;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class JourneyStatus {
@@ -18,45 +21,47 @@ public class JourneyStatus {
     private static JourneyStatus instance = null;
     private static int journeyState;
     private static double journeyDistance;
-    private static int journeyDuration;
     private static String journeyStartTime;
     private static String journeyEndTime;
     private static int overSpeedCount;
     private static int drowsinessCount;
+    private Context mContext;
 
-    public static synchronized JourneyStatus getInstance() {
+    //TODO: Both to be initialized during splash screen
+    private List<SummaryLog> summaryLogList;
+    private SummaryLogsAdapter summaryLogsAdapter;
+
+    public static synchronized JourneyStatus getInstance(Context context) {
         if(instance == null) {
-            instance = new JourneyStatus();
+            instance = new JourneyStatus(context.getApplicationContext());
         }
         return instance;
     }
 
-    private void resetJourneyStatus() {
-        journeyState = 0;
+    private void startNewJourney() {
         journeyDistance = 0;
-        journeyDuration = 0;
         overSpeedCount = 0;
         drowsinessCount = 0;
         journeyStartTime = new String();
         journeyEndTime = new String();
     }
 
-    private JourneyStatus() {
-        resetJourneyStatus();
-    }
-
-    public int getJourneyState() {
-        return journeyState;
+    private JourneyStatus(Context context) {
+        this.mContext = context;
+        //Should be done when the splash screen loads
+        summaryLogList = DataBaseHelper.getInstance(context).getAllSummaryLogs();
+        summaryLogsAdapter = new SummaryLogsAdapter(summaryLogList);
+        startNewJourney();
     }
 
     public void toggleJourneyState() {
         journeyState ^= 1;
     }
 
-    //TODO: Whenever the journey starts or ends, intend it to the maps activity
-    public void setJourneyStateButtonView(View view, Context context) {
+    //TODO: Whenever the journey starts or ends, intent it to the maps activity
+    public void setJourneyStateButton(View view, Context context) {
         final Button btn = (Button) view;
-        if(getJourneyState() == JOURNEY_NOT_STARTED) {
+        if(journeyState == JOURNEY_NOT_STARTED) {
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -65,7 +70,6 @@ public class JourneyStatus {
                 }
             });
         } else {
-            journeyDistance = 0;
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -76,14 +80,6 @@ public class JourneyStatus {
         }
     }
 
-    //        DataBaseHelper.getInstance(context).insertOuterTable(new SummaryLogs(getDate(System.currentTimeMillis()), getDate(System.currentTimeMillis()+10000), 10.2, 1, 0));
-//        SummaryLogs obj = ((List<SummaryLogs>) DataBaseHelper.getInstance(context).getAllOuterTableEntries()).get(0);
-//        Log.e("Start time", obj.getStartTime());
-//        Log.e("End time", obj.getEndTime());
-//        Log.e("Distance", String.valueOf(obj.getDistance()));
-//        Log.e("Over speed count", String.valueOf(obj.getOverSpeedCount()));
-//        Log.e("Drowsiness count", String.valueOf(obj.getDrowsinessCount()));
-
     private String getDate(long time) {
         Calendar cal = Calendar.getInstance(Locale.getDefault());
         cal.setTimeInMillis(time);
@@ -92,4 +88,52 @@ public class JourneyStatus {
         return date;
     }
 
+    public void updateDistance(double segmentDistance) {
+        journeyDistance += segmentDistance;
+    }
+
+    public void incrementOverSpeedCount() {
+        overSpeedCount += 1;
+    }
+
+    public void incrementDrowsinessCount() {
+        drowsinessCount += 1;
+    }
+
+    public List<SummaryLog> getSummaryLogList() {
+        return summaryLogList;
+    }
+
+    public void updateJourneyLog() {
+        if(journeyState == JOURNEY_NOT_STARTED) {
+            journeyStartTime = getDate(System.currentTimeMillis());
+        } else if(journeyState == JOURNEY_STARTED) {
+            journeyEndTime = getDate(System.currentTimeMillis());
+            final SummaryLog newJourneySummaryLog = new SummaryLog(journeyStartTime, journeyEndTime, journeyDistance, overSpeedCount, drowsinessCount);
+            summaryLogList.add(newJourneySummaryLog);
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    DataBaseHelper.getInstance(mContext).insertSummaryLog(newJourneySummaryLog);
+                }
+            };
+            Thread newThread = new Thread(r);
+            newThread.start();
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    summaryLogsAdapter.notifyDataSetChanged();
+                }
+            });
+
+            //TODO: Generate a message for ending
+            toggleJourneyState();
+            startNewJourney();
+        }
+    }
+
+    public SummaryLogsAdapter getSummaryLogsAdapter() {
+        return summaryLogsAdapter;
+    }
 }

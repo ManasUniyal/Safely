@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.List;
-
 public class DrivingLogs extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
@@ -53,21 +51,20 @@ public class DrivingLogs extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        List<SummaryLog> summaryLogList = DataBaseHelper.getInstance(DrivingLogs.this).getAllSummaryLogs();
-        SummaryLogsAdapter summaryLogsAdapter = new SummaryLogsAdapter(summaryLogList);
-        recyclerView.setAdapter(summaryLogsAdapter);
+//        SummaryLogsAdapter summaryLogsAdapter = new SummaryLogsAdapter(JourneyStatus.getInstance(DrivingLogs.this).getSummaryLogList());
+        recyclerView.setAdapter(JourneyStatus.getInstance(DrivingLogs.this).getSummaryLogsAdapter());
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, DrivingLogs.this);
+        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, DrivingLogs.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance().toggleJourneyState();
-                JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, DrivingLogs.this);
+                JourneyStatus.getInstance(DrivingLogs.this).updateJourneyLog();
+                JourneyStatus.getInstance(DrivingLogs.this).toggleJourneyState();
+                JourneyStatus.getInstance(DrivingLogs.this).setJourneyStateButton(journeyStateButton, DrivingLogs.this);
+                startActivity(new Intent(getApplicationContext(), MapsActivity.class));
             }
         });
-
-
 
     }
 }

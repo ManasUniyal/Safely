@@ -1,7 +1,6 @@
 package com.example.miniproject;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -29,7 +28,6 @@ public class SpeedLimitManager {
     private static String locationString;
     private static final int QUEUE_CAPACITY = 20;
     private static final int DEFAULT_SPEED_LIMIT = 45;
-    private static MediaPlayer mediaPlayer;
 
     private SpeedLimitManager(Context context) {
         this.context = context.getApplicationContext();
@@ -131,6 +129,7 @@ public class SpeedLimitManager {
     public void checkSpeed(int roadSpeedLimit) {
         if(currentRoadSegmentSpeed > roadSpeedLimit) {
             Log.e("CheckSpeed", "Alert User");
+            JourneyStatus.getInstance(context).incrementOverSpeedCount();
             alertUser();
         }
     }

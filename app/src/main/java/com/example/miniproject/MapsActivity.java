@@ -121,12 +121,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, MapsActivity.this);
+        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, MapsActivity.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance().toggleJourneyState();
-                JourneyStatus.getInstance().setJourneyStateButtonView(journeyStateButton, MapsActivity.this);
+                JourneyStatus.getInstance(MapsActivity.this).updateJourneyLog();
+                JourneyStatus.getInstance(MapsActivity.this).setJourneyStateButton(journeyStateButton, MapsActivity.this);
+                startActivity(new Intent(getApplicationContext(), MapsActivity.class));
             }
         });
 
@@ -153,7 +154,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Location location = locationList.get(locationList.size() - 1);
                 LatLng latLngSource = new LatLng(location.getLatitude(), location.getLongitude());
                 source = latLngSource;
-                int speed = getSpeed(source, previousLocation);
+                double segmentDistance = getDistance(source, previousLocation);
+                JourneyStatus.getInstance(getApplicationContext()).updateDistance(segmentDistance);
+                int speed = getSpeed(segmentDistance);
                 SpeedLimitManager.getInstance(getApplicationContext()).update(source,speed);
                 Log.e("Speed", String.valueOf(speed));
                 previousLocation = source;
@@ -174,16 +177,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    private void checkSpeed() {
-    }
-
-    private int getSpeed(LatLng newPosition, LatLng oldPosition) {
+    private double getDistance(LatLng newPosition, LatLng oldPosition) {
         assert (newPosition!=null && oldPosition!=null);
-//        long endTime = System.currentTimeMillis();
-//        long time = endTime - previousTime;
         float[] results = new float[1];
         Location.distanceBetween(oldPosition.latitude, oldPosition.longitude, newPosition.latitude, newPosition.longitude, results);
-        final double speed = (results[0]/DEFAULT_TIME_GAP) * 1000 * 3.6;  //speed in km/h
+        return results[0];
+    }
+
+    //TODO: Improve the logic for calculating speed
+    private int getSpeed(double distance) {
+//        long endTime = System.currentTimeMillis();
+//        long time = endTime - previousTime;
+        final double speed = (distance/DEFAULT_TIME_GAP) * 1000 * 3.6;  //speed in km/h
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
