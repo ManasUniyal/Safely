@@ -4,5 +4,6 @@
     <color name="colorPrimaryDark">@color/quantum_grey800</color>
     <color name="colorAccent">#D81B60</color>
     <color name="dark_green">#2196F3</color>
+    <color name="red">@color/quantum_googred</color>
     <color name="blue">#00008B</color>
 </resources>

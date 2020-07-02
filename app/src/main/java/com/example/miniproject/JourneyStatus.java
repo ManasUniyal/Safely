@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -145,7 +146,13 @@ public class JourneyStatus {
         return summaryLogsAdapter;
     }
 
+    
+    public List<SummaryLog> LineChart(int id) {
+        return DataBaseHelper.getInstance(mContext).getChartData(id);
+    }
+
     public long getLastDetailedLogEntryNumber() {
         return lastDetailedLogEntryNumber;
+
     }
 }

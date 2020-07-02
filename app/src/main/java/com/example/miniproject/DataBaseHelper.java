@@ -6,10 +6,14 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -193,4 +197,56 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (db != null && db.isOpen())
             db.close();
     }
+
+    public List<SummaryLog> getChartData(int id)
+    {
+        List<SummaryLog> logs = new ArrayList<>();
+        String start_time = getDate(System.currentTimeMillis(),0);
+        String end_time="";
+
+        if(id == 0)
+            end_time =getDate(System.currentTimeMillis(),365);
+        else if(id==1)
+            end_time =getDate(System.currentTimeMillis(),30);
+        else if(id==2)
+            end_time =getDate(System.currentTimeMillis(),7);
+        else if(id==3)
+            end_time =getDate(System.currentTimeMillis(),1);
+        String query="SELECT * FROM " + TABLE_SUMMARY_LOGS + " where (substr(start_time, 7, 4)||'-'||substr(start_time, 4, 2)||'-'||substr(start_time,1,2))"+" between '"+end_time +"' and '"+start_time+"'";
+
+        Log.e(TAG, query);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery(query, null);
+        if (cur.moveToFirst()) {
+            do {
+
+                SummaryLog summaryLogObject = new SummaryLog();
+//                Log.e("ID", String.valueOf(cur.getInt(cur.getColumnIndex(KEY_ID))));
+                summaryLogObject.setStartTime(cur.getString(cur.getColumnIndex(KEY_START_TIME)));
+                summaryLogObject.setEndTime(cur.getString(cur.getColumnIndex(KEY_END_TIME)));
+                summaryLogObject.setDistance((cur.getDouble(cur.getColumnIndex(KEY_DISTANCE))));
+                summaryLogObject.setOverSpeedCount(cur.getInt(cur.getColumnIndex(KEY_OVER_SPEED_COUNT)));
+                summaryLogObject.setDrowsinessCount(cur.getInt(cur.getColumnIndex(KEY_DROWSINESS_COUNT)));
+
+                logs.add(summaryLogObject);
+
+                Log.e("Start time", summaryLogObject.getStartTime());
+                Log.e("End time", summaryLogObject.getEndTime());
+                Log.e("Distance", String.valueOf(summaryLogObject.getDistance()));
+                Log.e("Over speed count", String.valueOf(summaryLogObject.getOverSpeedCount()));
+                Log.e("Drowsiness count", String.valueOf(summaryLogObject.getDrowsinessCount()));
+
+            } while (cur.moveToNext());
+        }
+        return logs;
+    }
+    private String getDate(long time,int previous) {
+        Calendar cal = Calendar.getInstance(Locale.getDefault());
+        cal.setTimeInMillis(time);
+        cal.add(Calendar.DATE,-previous);
+        String date = DateFormat.format("yyyy-MM-dd", cal).toString();
+        Log.e("Date", date);
+        return date;
+    }
+
 }
