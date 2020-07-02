@@ -1,6 +1,7 @@
 package com.example.miniproject;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,8 +18,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DrivingLogs extends AppCompatActivity {
@@ -61,11 +71,11 @@ public class DrivingLogs extends AppCompatActivity {
         });
         //SetUp Spinner
         setUpSpinner();
-        setUpChart(2);
+
         spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-               //setUpChart(position);
+               setUpChart(position);
             }
 
             @Override
@@ -105,6 +115,25 @@ public class DrivingLogs extends AppCompatActivity {
     {
         List<SummaryLog> logList = JourneyStatus.getInstance(DrivingLogs.this).LineChart(id);
         Log.d("Chart List Size", String.valueOf(logList.size()));
+        ArrayList<Entry> overspeed_chart = new ArrayList<>();
+        ArrayList<Entry> drowsiness_chart = new ArrayList<>();
+        for( SummaryLog summaryLog: logList)
+        {
+            overspeed_chart.add(new Entry(Float.parseFloat(summaryLog.getStartTime().substring(0,2)),summaryLog.getOverSpeedCount()));
+            drowsiness_chart.add(new Entry(Float.parseFloat(summaryLog.getStartTime().substring(0,2)),summaryLog.getDrowsinessCount()));
+        }
+        //TODO Customization for Graph
+        LineDataSet lineDataSet1 = new LineDataSet(overspeed_chart,"OverSpeed");
+
+        LineDataSet lineDataSet2 = new LineDataSet(drowsiness_chart,"Drowsiness");
+
+        ArrayList<ILineDataSet> dataset = new ArrayList<>();
+        dataset.add(lineDataSet1);
+        dataset.add(lineDataSet2);
+        LineData lineData  = new LineData(dataset);
+        mpLineChart.setData(lineData);
+        mpLineChart.invalidate();
+
     }
 
 }
