@@ -14,16 +14,18 @@ import java.util.List;
 public class SummaryLogsAdapter extends RecyclerView.Adapter<SummaryLogsAdapter.SummaryLogsViewHolder> {
 
     private List<SummaryLog> summaryLogList;
+    private OnSummaryLogClickListener onSummaryLogClickListener;
 
-    public SummaryLogsAdapter(List<SummaryLog> summaryLogList) {
+    public SummaryLogsAdapter(List<SummaryLog> summaryLogList, OnSummaryLogClickListener onSummaryLogClickListener) {
         this.summaryLogList = summaryLogList;
+        this.onSummaryLogClickListener = onSummaryLogClickListener;
     }
 
     @NonNull
     @Override
     public SummaryLogsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.summary_log_row_layout, parent, false);
-        SummaryLogsViewHolder summaryLogsViewHolder = new SummaryLogsViewHolder(view);
+        SummaryLogsViewHolder summaryLogsViewHolder = new SummaryLogsViewHolder(view, onSummaryLogClickListener);
         return summaryLogsViewHolder;
     }
 
@@ -54,15 +56,16 @@ public class SummaryLogsAdapter extends RecyclerView.Adapter<SummaryLogsAdapter.
         return summaryLogList.size();
     }
 
-    public class SummaryLogsViewHolder extends RecyclerView.ViewHolder {
+    public class SummaryLogsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView textViewOverSpeedCount;
         TextView textViewDrowsinessCount;
         TextView textViewStartTime;
         TextView textViewEndTime;
         TextView textViewDistance;
         TextView textViewDuration;
+        OnSummaryLogClickListener onSummaryLogClickListener;
 
-        public SummaryLogsViewHolder(@NonNull View itemView) {
+        public SummaryLogsViewHolder(@NonNull View itemView, OnSummaryLogClickListener onSummaryLogClickListener) {
             super(itemView);
             textViewOverSpeedCount = itemView.findViewById(R.id.overSpeedCount);
             textViewDrowsinessCount = itemView.findViewById(R.id.drowsinessCount);
@@ -70,6 +73,17 @@ public class SummaryLogsAdapter extends RecyclerView.Adapter<SummaryLogsAdapter.
             textViewEndTime = itemView.findViewById(R.id.endTime);
             textViewDistance = itemView.findViewById(R.id.distance);
             textViewDuration = itemView.findViewById(R.id.duration);
+            this.onSummaryLogClickListener = onSummaryLogClickListener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            onSummaryLogClickListener.onSummaryLogClick(getAdapterPosition());
+        }
+    }
+
+    public interface OnSummaryLogClickListener {
+        void onSummaryLogClick(int position);
     }
 }

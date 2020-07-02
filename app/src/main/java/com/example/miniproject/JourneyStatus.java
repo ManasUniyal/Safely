@@ -50,8 +50,9 @@ public class JourneyStatus {
     private JourneyStatus(Context context) {
         this.mContext = context;
         //Should be done when the splash screen loads
-        summaryLogList = DataBaseHelper.getInstance(context).getAllSummaryLogs();
-        summaryLogsAdapter = new SummaryLogsAdapter(summaryLogList);
+        //TODO: Adjust the adapter for Summary Logs such that it can be instantiated at splash screen loading time
+//        summaryLogList = DataBaseHelper.getInstance(context).getAllSummaryLogs();
+//        summaryLogsAdapter = new SummaryLogsAdapter(summaryLogList, );
         startNewJourney();
         //TODO: Shift it to Splash screen
         lastDetailedLogEntryNumber = DataBaseHelper.getInstance(context).getNumberOfEntriesInSummaryLogs();
@@ -113,7 +114,7 @@ public class JourneyStatus {
         } else if(journeyState == JOURNEY_STARTED) {
             journeyEndTime = getDate(System.currentTimeMillis());
             final SummaryLog newJourneySummaryLog = new SummaryLog(journeyStartTime, journeyEndTime, journeyDistance, overSpeedCount, drowsinessCount);
-            summaryLogList.add(newJourneySummaryLog);
+//            summaryLogList.add(newJourneySummaryLog);
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
@@ -123,12 +124,13 @@ public class JourneyStatus {
             Thread newThread = new Thread(r);
             newThread.start();
 
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    summaryLogsAdapter.notifyDataSetChanged();
-                }
-            });
+            //TODO: Adjust the adapter
+//            new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    summaryLogsAdapter.notifyDataSetChanged();
+//                }
+//            });
 
             //TODO: Generate a message for ending journey
             toggleJourneyState();

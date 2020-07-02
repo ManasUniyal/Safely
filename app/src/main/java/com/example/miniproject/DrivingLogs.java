@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class DrivingLogs extends AppCompatActivity {
+public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter.OnSummaryLogClickListener{
 
     private BottomNavigationView bottomNavigationView;
     private Button journeyStateButton;
@@ -51,8 +51,8 @@ public class DrivingLogs extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-//        SummaryLogsAdapter summaryLogsAdapter = new SummaryLogsAdapter(JourneyStatus.getInstance(DrivingLogs.this).getSummaryLogList());
-        recyclerView.setAdapter(JourneyStatus.getInstance(DrivingLogs.this).getSummaryLogsAdapter());
+        SummaryLogsAdapter summaryLogsAdapter = new SummaryLogsAdapter(DataBaseHelper.getInstance(DrivingLogs.this).getAllSummaryLogs(), this);
+        recyclerView.setAdapter(summaryLogsAdapter);
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
         JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, DrivingLogs.this);
@@ -67,5 +67,12 @@ public class DrivingLogs extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onSummaryLogClick(int position) {
+        Intent intent = new Intent(DrivingLogs.this, ShowDetailedLogs.class);
+        intent.putExtra("summaryLogIndex", position+1);
+        startActivity(intent);
     }
 }
