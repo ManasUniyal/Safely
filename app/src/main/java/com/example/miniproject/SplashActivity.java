@@ -10,20 +10,22 @@ import android.view.WindowManager;
 
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
+    private static final int SECONDS_DELAY = 5;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        int secondsDelayed = 5;
-        new Handler().postDelayed(new Runnable() {
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+
+/*        new Handler().postDelayed(new Runnable() {
             public void run() {
-                Log.d(TAG,"Splash Activity 5 sec");
+                Log.d(TAG,"Splash Activity " + SECONDS_DELAY + " sec");
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 finish();
             }
-        }, secondsDelayed * 1000);
+        }, SECONDS_DELAY * 1000);*/
 
     }
 }
