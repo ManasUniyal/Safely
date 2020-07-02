@@ -3,14 +3,11 @@ package com.example.miniproject;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -85,7 +82,7 @@ public class JourneyStatus {
         }
     }
 
-    private String getDate(long time) {
+    public String getDateTime(long time) {
         Calendar cal = Calendar.getInstance(Locale.getDefault());
         cal.setTimeInMillis(time);
         String date = DateFormat.format("dd-MM-yyyy HH:mm:ss", cal).toString();
@@ -109,13 +106,18 @@ public class JourneyStatus {
         return summaryLogList;
     }
 
+    private void incrementSummaryLogEntry() {
+        lastDetailedLogEntryNumber++;
+    }
+
     public void updateJourneyLog() {
         if(journeyState == JOURNEY_NOT_STARTED) {
-            journeyStartTime = getDate(System.currentTimeMillis());
+            journeyStartTime = getDateTime(System.currentTimeMillis());
         } else if(journeyState == JOURNEY_STARTED) {
-            journeyEndTime = getDate(System.currentTimeMillis());
+            journeyEndTime = getDateTime(System.currentTimeMillis());
+            incrementSummaryLogEntry();
             final SummaryLog newJourneySummaryLog = new SummaryLog(journeyStartTime, journeyEndTime, journeyDistance, overSpeedCount, drowsinessCount);
-//            summaryLogList.add(newJourneySummaryLog);
+//          summaryLogList.add(newJourneySummaryLog);
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
@@ -137,9 +139,9 @@ public class JourneyStatus {
             toggleJourneyState();
             startNewJourney();
         }
-        Log.e("Inserting data", "Detailed logs");
-        DataBaseHelper.getInstance(mContext).insertDetailedLog(new DetailedLog(1,56.324564,45.26454562,20,15,getDate(System.currentTimeMillis())));
-        DataBaseHelper.getInstance(mContext).getDetailedLog(1);
+//        Log.e("Inserting data", "Detailed logs");
+//        DataBaseHelper.getInstance(mContext).insertDetailedLog(new DetailedLog(1,56.324564,45.26454562,20,15, getDateTime(System.currentTimeMillis())));
+//        DataBaseHelper.getInstance(mContext).getDetailedLog(1);
     }
 
     public SummaryLogsAdapter getSummaryLogsAdapter() {
@@ -153,6 +155,5 @@ public class JourneyStatus {
 
     public long getLastDetailedLogEntryNumber() {
         return lastDetailedLogEntryNumber;
-
     }
 }

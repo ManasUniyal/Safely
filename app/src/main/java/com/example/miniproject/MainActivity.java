@@ -311,9 +311,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        super.onPause();
         closeCamera();
         stopBackgroundThread();
-        super.onPause();
+        AlertUserAudio.getInstance(MainActivity.this).endWarning();
     }
 
     private void closeCamera() {

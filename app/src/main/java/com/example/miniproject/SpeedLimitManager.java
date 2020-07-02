@@ -25,6 +25,7 @@ public class SpeedLimitManager {
     private Queue<LatLng> locationsQueue;
     private int roadSpeedLimit;
     private int currentRoadSegmentSpeed;
+    private LatLng currentLocation;
     private static String locationString;
     private static final int QUEUE_CAPACITY = 20;
     private static final int DEFAULT_SPEED_LIMIT = 45;
@@ -48,6 +49,7 @@ public class SpeedLimitManager {
     }
 
     public void addLocation(LatLng location) {
+        this.currentLocation = location;
         if (locationsQueue.size() == QUEUE_CAPACITY) {
             locationsQueue.remove();
             int indexOfDelimiter = locationString.indexOf('|');
@@ -127,15 +129,30 @@ public class SpeedLimitManager {
     }
 
     public void checkSpeed(int roadSpeedLimit) {
-        if(currentRoadSegmentSpeed > roadSpeedLimit) {
+        if(currentRoadSegmentSpeed <= roadSpeedLimit) {
             Log.e("CheckSpeed", "Alert User");
             JourneyStatus.getInstance(context).incrementOverSpeedCount();
+            updatedDetailedLogs();
             alertUser();
         }
     }
 
+    private void updatedDetailedLogs() {
+        //TODO: Do this in a thread
+        DetailedLog detailedLogObject = new DetailedLog();
+        detailedLogObject.setSummaryId(JourneyStatus.getInstance(context).getLastDetailedLogEntryNumber() + 1);
+        detailedLogObject.setLatitude(currentLocation.latitude);
+        detailedLogObject.setLongitude(currentLocation.longitude);
+        detailedLogObject.setSpeed(currentRoadSegmentSpeed);
+        detailedLogObject.setSpeedLimit(roadSpeedLimit);
+        detailedLogObject.setDateTime(JourneyStatus.getInstance(context).getDateTime(System.currentTimeMillis()));
+        DataBaseHelper.getInstance(context).insertDetailedLog(detailedLogObject);
+        Log.e("Speed Limit Manager", detailedLogObject.toString());
+        Log.e("Summary log number", String.valueOf(JourneyStatus.getInstance(context).getLastDetailedLogEntryNumber()));
+    }
+
     private void alertUser() {
-        AlertUserAudio.startWarning(context);
+        AlertUserAudio.getInstance(context).startWarning();
         //TODO: Make entry into database, if condition satisfies (to be decided)
     }
 }

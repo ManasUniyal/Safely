@@ -56,7 +56,7 @@
     "buildTargetSet": []
   },
   "abi": "X86_64",
-  "abiPlatformVersion": 26,
+  "abiPlatformVersion": 21,
   "cxxBuildFolder": "D:\\Mini Project\\app\\.cxx\\cmake\\debug\\x86_64",
   "jsonFile": "D:\\Mini Project\\app\\.cxx\\cmake\\debug\\x86_64\\android_gradle_build.json",
   "gradleBuildOutputFolder": "D:\\Mini Project\\app\\.cxx\\cxx\\debug\\x86_64",

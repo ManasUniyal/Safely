@@ -3,7 +3,7 @@ arguments :
 -HD:\Mini Project\app
 -BD:\Mini Project\app\.cxx\cmake\release\x86_64
 -DANDROID_ABI=x86_64
--DANDROID_PLATFORM=android-26
+-DANDROID_PLATFORM=android-21
 -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=D:\Mini Project\app\build\intermediates\cmake\release\obj\x86_64
 -DCMAKE_BUILD_TYPE=Release
 -DANDROID_NDK=C:\Users\DELL\AppData\Local\Android\Sdk\ndk\21.2.6472646

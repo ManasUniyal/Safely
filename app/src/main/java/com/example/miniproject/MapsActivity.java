@@ -63,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
-    final String TAG = "Volley response from UI thread";
+    final String TAG = "Volley from UI thread";
     private LocationRequest mLocationRequest;
     private LatLng source;
     private LatLng destination;
@@ -353,7 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Toast.makeText(getApplicationContext(), "Getting current location", Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            Log.e("Device last known location","Not found");
+                            Log.e("Device last location","Not found");
                         }
                     }
                 });
@@ -408,7 +408,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(mFusedLocationProviderClient != null) {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
-        AlertUserAudio.endWarning();
+        AlertUserAudio.getInstance(MapsActivity.this).endWarning();
     }
 
     @Override

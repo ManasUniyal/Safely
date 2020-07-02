@@ -111,7 +111,6 @@ public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter
 
 
     void setUpSpinner(){
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, types);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spin.setAdapter(adapter);
@@ -128,7 +127,7 @@ public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter
             overspeed_chart.add(new Entry(Float.parseFloat(summaryLog.getStartTime().substring(0,2)),summaryLog.getOverSpeedCount()));
             drowsiness_chart.add(new Entry(Float.parseFloat(summaryLog.getStartTime().substring(0,2)),summaryLog.getDrowsinessCount()));
         }
-        //TODO Customization for Graph
+        //TODO: Customization of Graph
         LineDataSet lineDataSet1 = new LineDataSet(overspeed_chart,"OverSpeed");
 
         LineDataSet lineDataSet2 = new LineDataSet(drowsiness_chart,"Drowsiness");
@@ -139,7 +138,6 @@ public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter
         LineData lineData  = new LineData(dataset);
         mpLineChart.setData(lineData);
         mpLineChart.invalidate();
-
     }
 
 
@@ -150,4 +148,9 @@ public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter
         startActivity(intent);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AlertUserAudio.getInstance(DrivingLogs.this).endWarning();
+    }
 }
