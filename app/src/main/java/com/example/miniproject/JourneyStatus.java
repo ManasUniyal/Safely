@@ -26,6 +26,7 @@ public class JourneyStatus {
     private static int overSpeedCount;
     private static int drowsinessCount;
     private Context mContext;
+    private long lastDetailedLogEntryNumber;
 
     //TODO: Both to be initialized during splash screen
     private List<SummaryLog> summaryLogList;
@@ -52,6 +53,8 @@ public class JourneyStatus {
         summaryLogList = DataBaseHelper.getInstance(context).getAllSummaryLogs();
         summaryLogsAdapter = new SummaryLogsAdapter(summaryLogList);
         startNewJourney();
+        //TODO: Shift it to Splash screen
+        lastDetailedLogEntryNumber = DataBaseHelper.getInstance(context).getNumberOfEntriesInSummaryLogs();
     }
 
     public void toggleJourneyState() {
@@ -127,13 +130,20 @@ public class JourneyStatus {
                 }
             });
 
-            //TODO: Generate a message for ending
+            //TODO: Generate a message for ending journey
             toggleJourneyState();
             startNewJourney();
         }
+        Log.e("Inserting data", "Detailed logs");
+        DataBaseHelper.getInstance(mContext).insertDetailedLog(new DetailedLog(1,56.324564,45.26454562,20,15,getDate(System.currentTimeMillis())));
+        DataBaseHelper.getInstance(mContext).getDetailedLog(1);
     }
 
     public SummaryLogsAdapter getSummaryLogsAdapter() {
         return summaryLogsAdapter;
+    }
+
+    public long getLastDetailedLogEntryNumber() {
+        return lastDetailedLogEntryNumber;
     }
 }

@@ -3,6 +3,7 @@ package com.example.miniproject;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -33,11 +34,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String KEY_DROWSINESS_COUNT = "drowsiness_count";
 
     //Columns for DETAILED TABLE
+    private static final String KEY_SUMMARY_ID = "summary_id";
     private static final String KEY_LATITUDE = "latitude";
     private static final String KEY_LONGITUDE = "longitude";
     private static final String KEY_SPEED = "speed";
     private static final String KEY_SPEED_LIMIT = "speed_limit";
-    private static final String KEY_DATE_TIME = "time";
+    private static final String KEY_DATE_TIME = "dateTime";
 
     public static DataBaseHelper getInstance(Context context) {
         if(dataBaseHelperInstance == null) {
@@ -66,6 +68,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_DETAILED_LOGS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY, "
+                + KEY_SUMMARY_ID + " INTEGER, "
                 + KEY_LATITUDE + " REAL, "
                 + KEY_LONGITUDE + " REAL, "
                 + KEY_SPEED + " INTEGER, "
@@ -90,7 +93,29 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(KEY_OVER_SPEED_COUNT, summaryLog.getOverSpeedCount());
         values.put(KEY_DROWSINESS_COUNT, summaryLog.getDrowsinessCount());
         long val = db.insert(TABLE_SUMMARY_LOGS, null, values);
-        Log.e(TAG,String.valueOf(val));
+        Log.e("Inserted "+TABLE_SUMMARY_LOGS,String.valueOf(val));
+    }
+
+    public void insertDetailedLog(DetailedLog detailedLog) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_SUMMARY_ID, detailedLog.getSummaryId());
+        values.put(KEY_LATITUDE, detailedLog.getLatitude());
+        values.put(KEY_LONGITUDE, detailedLog.getLongitude());
+        values.put(KEY_SPEED, detailedLog.getSpeed());
+        values.put(KEY_SPEED_LIMIT, detailedLog.getSpeedLimit());
+        values.put(KEY_DATE_TIME, detailedLog.getDateTime());
+        long val = db.insert(TABLE_DETAILED_LOGS, null, values);
+
+        Log.e("Inserted "+TABLE_DETAILED_LOGS, String.valueOf(val));
+
+        Log.e(KEY_SUMMARY_ID, String.valueOf(detailedLog.getSummaryId()));
+        Log.e(KEY_LATITUDE, String.valueOf(detailedLog.getLatitude()));
+        Log.e(KEY_LONGITUDE, String.valueOf(detailedLog.getLongitude()));
+        Log.e(KEY_SPEED, String.valueOf(detailedLog.getSpeed()));
+        Log.e(KEY_SPEED_LIMIT, String.valueOf(detailedLog.getSpeedLimit()));
+        Log.e(KEY_DATE_TIME, String.valueOf(detailedLog.getDateTime()));
+
     }
 
     public List<SummaryLog> getAllSummaryLogs() {
@@ -112,15 +137,55 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
                 summaryLogList.add(summaryLogObject);
 
-                Log.e("Start time", summaryLogObject.getStartTime());
-                Log.e("End time", summaryLogObject.getEndTime());
-                Log.e("Distance", String.valueOf(summaryLogObject.getDistance()));
-                Log.e("Over speed count", String.valueOf(summaryLogObject.getOverSpeedCount()));
-                Log.e("Drowsiness count", String.valueOf(summaryLogObject.getDrowsinessCount()));
+//                Log.e("Start time", summaryLogObject.getStartTime());
+//                Log.e("End time", summaryLogObject.getEndTime());
+//                Log.e("Distance", String.valueOf(summaryLogObject.getDistance()));
+//                Log.e("Over speed count", String.valueOf(summaryLogObject.getOverSpeedCount()));
+//                Log.e("Drowsiness count", String.valueOf(summaryLogObject.getDrowsinessCount()));
 
             } while (cur.moveToNext());
         }
         return summaryLogList;
+    }
+
+    public List<DetailedLog> getDetailedLog(int summaryLogId) {
+        List<DetailedLog> detailedLogList = new ArrayList<DetailedLog>();
+        String selectQuery = "SELECT  * FROM " + TABLE_DETAILED_LOGS + " WHERE " + KEY_SUMMARY_ID + " = " + summaryLogId;
+        Log.e(TAG, selectQuery);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery(selectQuery, null);
+        if (cur.moveToFirst()) {
+            do {
+                DetailedLog detailedLogObject = new DetailedLog();
+                Log.e(KEY_ID, String.valueOf(cur.getInt(cur.getColumnIndex(KEY_ID))));
+                Log.e(KEY_SUMMARY_ID, String.valueOf(cur.getLong(cur.getColumnIndex(KEY_SUMMARY_ID))));
+
+                detailedLogObject.setSummaryId(cur.getLong(cur.getColumnIndex(KEY_SUMMARY_ID)));
+                detailedLogObject.setLatitude(cur.getDouble(cur.getColumnIndex(KEY_LATITUDE)));
+                detailedLogObject.setLongitude(cur.getDouble(cur.getColumnIndex(KEY_LONGITUDE)));
+                detailedLogObject.setSpeed(cur.getInt(cur.getColumnIndex(KEY_SPEED)));
+                detailedLogObject.setSpeedLimit(cur.getInt(cur.getColumnIndex(KEY_SPEED_LIMIT)));
+                detailedLogObject.setDateTime(cur.getString(cur.getColumnIndex(KEY_DATE_TIME)));
+
+                detailedLogList.add(detailedLogObject);
+
+                Log.e(TAG,"Fetching details from Detailed Logs");
+                Log.e(KEY_LATITUDE, String.valueOf(detailedLogObject.getLatitude()));
+                Log.e(KEY_LONGITUDE, String.valueOf(detailedLogObject.getLongitude()));
+                Log.e(KEY_SPEED, String.valueOf(detailedLogObject.getSpeed()));
+                Log.e(KEY_SPEED_LIMIT, String.valueOf(detailedLogObject.getSpeedLimit()));
+                Log.e(KEY_DATE_TIME, String.valueOf(detailedLogObject.getDateTime()));
+
+            } while (cur.moveToNext());
+        }
+        Log.e("Size of "+TABLE_SUMMARY_LOGS, String.valueOf(detailedLogList.size()));
+        return detailedLogList;
+    }
+
+    public long getNumberOfEntriesInSummaryLogs() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        long numberOfEntries = DatabaseUtils.queryNumEntries(db, TABLE_SUMMARY_LOGS);
+        return numberOfEntries;
     }
 
     public void closeDB() {

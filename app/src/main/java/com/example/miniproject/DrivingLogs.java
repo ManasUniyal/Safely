@@ -61,6 +61,7 @@ public class DrivingLogs extends AppCompatActivity {
             public void onClick(View v) {
                 JourneyStatus.getInstance(DrivingLogs.this).updateJourneyLog();
                 JourneyStatus.getInstance(DrivingLogs.this).toggleJourneyState();
+                //TODO: Include the below method in toggle
                 JourneyStatus.getInstance(DrivingLogs.this).setJourneyStateButton(journeyStateButton, DrivingLogs.this);
                 startActivity(new Intent(getApplicationContext(), MapsActivity.class));
             }
