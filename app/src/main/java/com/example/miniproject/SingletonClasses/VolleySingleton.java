@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.SingletonClasses;
 
 import android.content.Context;
 

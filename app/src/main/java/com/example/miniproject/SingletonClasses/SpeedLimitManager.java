@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.SingletonClasses;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,6 +9,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.miniproject.Utilities.AlertUserAudio;
+import com.example.miniproject.BuildConfig;
+import com.example.miniproject.DataClasses.DetailedLog;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -31,7 +34,7 @@ public class SpeedLimitManager {
     private static final int DEFAULT_SPEED_LIMIT = 45;
 
     private SpeedLimitManager(Context context) {
-        this.context = context.getApplicationContext();
+        this.context = context;
         locationsQueue = new LinkedList<>();
         locationString = new String();
         roadSpeedLimit = DEFAULT_SPEED_LIMIT;
@@ -39,7 +42,7 @@ public class SpeedLimitManager {
 
     public static synchronized SpeedLimitManager getInstance(Context context) {
         if (instance == null)
-            instance = new SpeedLimitManager(context);
+            instance = new SpeedLimitManager(context.getApplicationContext());
         return instance;
     }
 

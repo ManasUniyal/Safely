@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.DataClasses;
 
 public class DetailedLog {
     private long summaryId;

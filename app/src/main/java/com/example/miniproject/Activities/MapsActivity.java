@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.Activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -23,6 +23,14 @@ import com.android.volley.Cache;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.example.miniproject.Utilities.AlertUserAudio;
+import com.example.miniproject.BuildConfig;
+import com.example.miniproject.RequestClasses.DirectionsRequest;
+import com.example.miniproject.SingletonClasses.JourneyStatus;
+import com.example.miniproject.Utilities.ObjectSerialiserDeserialiser;
+import com.example.miniproject.R;
+import com.example.miniproject.SingletonClasses.SpeedLimitManager;
+import com.example.miniproject.SingletonClasses.VolleySingleton;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -221,14 +229,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return url;
     }
 
-    //TODO: Use proper naming for class GsonRequest
+    //TODO: Use proper naming for class DirectionsRequest
     public void drawRoute(LatLng source, LatLng destination) {
 
 //        final String url = "https://maps.googleapis.com/maps/api/directions/json?origin=30.3165,78.0325&destination=28.7041,77.1025&sensor=false&key=" + BuildConfig.mapsAPIKey;
         final String url = getDirectionsUrl(source, destination);
         Cache.Entry entry = VolleySingleton.getInstance(getApplicationContext()).getCache().get(url);
         if(entry == null || entry.data == null) {
-            GsonRequest routeRequest = new GsonRequest(Request.Method.GET, url, new Response.Listener() {
+            DirectionsRequest routeRequest = new DirectionsRequest(Request.Method.GET, url, new Response.Listener() {
                 @Override
                 public void onResponse(Object response) {
                     Log.e("Data", response.toString());

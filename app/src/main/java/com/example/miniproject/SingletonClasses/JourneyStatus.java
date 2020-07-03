@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.SingletonClasses;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,10 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.miniproject.Adapters.SummaryLogsAdapter;
+import com.example.miniproject.DataClasses.SummaryLog;
+import com.example.miniproject.R;
 
 import java.util.Calendar;
 import java.util.List;

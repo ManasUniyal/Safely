@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.Activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -35,6 +35,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.miniproject.Utilities.AlertUserAudio;
+import com.example.miniproject.SingletonClasses.JourneyStatus;
+import com.example.miniproject.NativeClasses.Model;
+import com.example.miniproject.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;

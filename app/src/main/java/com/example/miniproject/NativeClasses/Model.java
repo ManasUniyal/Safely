@@ -1,8 +1,10 @@
-package com.example.miniproject;
+package com.example.miniproject.NativeClasses;
 
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
+
+import com.example.miniproject.NativeClasses.Native;
 
 import java.io.File;
 import java.io.FileOutputStream;

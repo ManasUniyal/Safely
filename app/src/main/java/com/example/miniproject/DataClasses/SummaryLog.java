@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.DataClasses;
 
 import java.text.DateFormat;
 import java.text.ParseException;

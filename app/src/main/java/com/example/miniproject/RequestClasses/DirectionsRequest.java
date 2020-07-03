@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.RequestClasses;
 
 import android.util.Log;
 
@@ -9,6 +9,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.example.miniproject.Utilities.DirectionsJSONParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,11 +18,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 
-public class GsonRequest extends Request {
+public class DirectionsRequest extends Request {
 
     private Response.Listener listener;
 
-    public GsonRequest(int method, String url, Response.Listener listener, @Nullable Response.ErrorListener errorListener) {
+    public DirectionsRequest(int method, String url, Response.Listener listener, @Nullable Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.listener = listener;
     }
@@ -29,7 +30,7 @@ public class GsonRequest extends Request {
     @Override
     protected Response parseNetworkResponse(NetworkResponse response) {
         try {
-            Log.e("GsonRequest","Not cached");
+            Log.e("DirectionsRequest","Not cached");
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
             JSONObject jsonObject = new JSONObject(json);
             DirectionsJSONParser jsonParser = new DirectionsJSONParser();

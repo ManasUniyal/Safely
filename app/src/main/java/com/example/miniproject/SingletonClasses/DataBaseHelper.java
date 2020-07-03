@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.SingletonClasses;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.format.DateFormat;
 import android.util.Log;
+
+import com.example.miniproject.DataClasses.DetailedLog;
+import com.example.miniproject.DataClasses.SummaryLog;
 
 import java.util.ArrayList;
 import java.util.Calendar;

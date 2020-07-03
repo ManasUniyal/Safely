@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.Utilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-class ObjectSerialiserDeserialiser {
+public class ObjectSerialiserDeserialiser {
 
     public static Object byteToObj(byte[] bytes) throws IOException, ClassNotFoundException {
         ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);

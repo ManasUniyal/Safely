@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.Utilities;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DirectionsJSONParser {
 
-    List<List<HashMap<String,String>>> parse(JSONObject jObject){
+    public List<List<HashMap<String,String>>> parse(JSONObject jObject){
 
         List<List<HashMap<String, String>>> routes = new ArrayList<>() ;
         JSONArray jRoutes;

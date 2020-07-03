@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.Adapters;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.miniproject.R;
+import com.example.miniproject.DataClasses.SummaryLog;
 
 import java.util.List;
 

@@ -1,10 +1,15 @@
-package com.example.miniproject;
+package com.example.miniproject.Activities;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.miniproject.Adapters.DetailedLogsAdapter;
+import com.example.miniproject.SingletonClasses.DataBaseHelper;
+import com.example.miniproject.DataClasses.DetailedLog;
+import com.example.miniproject.R;
 
 import java.util.List;
 

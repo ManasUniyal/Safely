@@ -106,7 +106,7 @@ namespace LK {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_miniproject_Native_loadModel(JNIEnv* env, jclass, jstring detectorPath) {
+Java_com_example_miniproject_NativeClasses_Native_loadModel(JNIEnv* env, jclass, jstring detectorPath) {
     try {
         const char *path = env->GetStringUTFChars(detectorPath, JNI_FALSE);
 
@@ -143,7 +143,7 @@ void rotateMat(cv::Mat &mat, int rotation) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_miniproject_Native_setImageFormat(JNIEnv* env, jclass, jint format) {
+Java_com_example_miniproject_NativeClasses_Native_setImageFormat(JNIEnv* env, jclass, jint format) {
     imageFormat = format;
 }
 
@@ -153,7 +153,7 @@ Java_com_example_miniproject_Native_setImageFormat(JNIEnv* env, jclass, jint for
 //--------------------------------------------------------------------------------------------------
 extern "C"
 JNIEXPORT jlongArray JNICALL
-Java_com_example_miniproject_Native_detectLandmarks(JNIEnv* env, jclass, jbyteArray yuvFrame, jint rotation, jint width, jint height, jint left, jint top, jint right, jint bottom) {
+Java_com_example_miniproject_NativeClasses_Native_detectLandmarks(JNIEnv* env, jclass, jbyteArray yuvFrame, jint rotation, jint width, jint height, jint left, jint top, jint right, jint bottom) {
     LOGD("JNI: detectLandmarks");
 
     // copy content of frame into image

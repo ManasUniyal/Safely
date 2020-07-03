@@ -1,7 +1,6 @@
-package com.example.miniproject;
+package com.example.miniproject.Activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -10,18 +9,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.miniproject.Utilities.AlertUserAudio;
+import com.example.miniproject.SingletonClasses.DataBaseHelper;
+import com.example.miniproject.SingletonClasses.JourneyStatus;
+import com.example.miniproject.R;
+import com.example.miniproject.DataClasses.SummaryLog;
+import com.example.miniproject.Adapters.SummaryLogsAdapter;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -34,7 +34,7 @@ import java.util.List;
 
 
 
-public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter.OnSummaryLogClickListener{
+public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter.OnSummaryLogClickListener {
 
 
     private BottomNavigationView bottomNavigationView;

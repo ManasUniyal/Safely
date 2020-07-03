@@ -1,8 +1,10 @@
-package com.example.miniproject;
+package com.example.miniproject.Utilities;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.Log;
+
+import com.example.miniproject.R;
 
 public class AlertUserAudio {
 

@@ -42,7 +42,7 @@
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent"
         map:layout_constraintVertical_bias="0.0"
-        tools:context=".MapsActivity" />
+        tools:context=".Activities.MapsActivity" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/bottomNavigation"

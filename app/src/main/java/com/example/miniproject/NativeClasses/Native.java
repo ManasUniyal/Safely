@@ -1,4 +1,4 @@
-package com.example.miniproject;
+package com.example.miniproject.NativeClasses;
 import android.graphics.Rect;
 
 public final class Native {

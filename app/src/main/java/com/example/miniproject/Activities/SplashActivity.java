@@ -1,12 +1,12 @@
-package com.example.miniproject;
+package com.example.miniproject.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.WindowManager;
+
+import com.example.miniproject.R;
 
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
