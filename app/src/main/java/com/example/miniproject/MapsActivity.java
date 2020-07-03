@@ -108,8 +108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         overridePendingTransition(0, 0);
                         return true;
                     case R.id.maps:
-                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
-                        overridePendingTransition(0, 0);
                         return true;
                     case R.id.logs:
                         startActivity(new Intent(getApplicationContext(), DrivingLogs.class));
@@ -125,9 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance(MapsActivity.this).updateJourneyLog();
-                JourneyStatus.getInstance(MapsActivity.this).setJourneyStateButton(journeyStateButton, MapsActivity.this);
-                startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                JourneyStatus.getInstance(MapsActivity.this).updateJourneyLog(journeyStateButton, MapsActivity.this);
             }
         });
 

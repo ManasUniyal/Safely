@@ -107,9 +107,7 @@ public class MainActivity extends AppCompatActivity {
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance(MainActivity.this).updateJourneyLog();
-                JourneyStatus.getInstance(MainActivity.this).toggleJourneyState();
-                JourneyStatus.getInstance(MainActivity.this).setJourneyStateButton(journeyStateButton, MainActivity.this);
+                JourneyStatus.getInstance(MainActivity.this).updateJourneyLog(journeyStateButton, MainActivity.this);
                 startActivity(new Intent(getApplicationContext(), MapsActivity.class));
             }
         });

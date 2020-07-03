@@ -99,14 +99,10 @@ public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance(DrivingLogs.this).updateJourneyLog();
-                JourneyStatus.getInstance(DrivingLogs.this).toggleJourneyState();
-                //TODO: Include the below method in toggle
-                JourneyStatus.getInstance(DrivingLogs.this).setJourneyStateButton(journeyStateButton, DrivingLogs.this);
+                JourneyStatus.getInstance(DrivingLogs.this).updateJourneyLog(journeyStateButton, DrivingLogs.this);
                 startActivity(new Intent(getApplicationContext(), MapsActivity.class));
             }
         });
-
     }
 
 

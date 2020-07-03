@@ -129,16 +129,19 @@ public class SpeedLimitManager {
     }
 
     public void checkSpeed(int roadSpeedLimit) {
-        if(currentRoadSegmentSpeed <= roadSpeedLimit) {
-            Log.e("CheckSpeed", "Alert User");
-            JourneyStatus.getInstance(context).incrementOverSpeedCount();
-            updatedDetailedLogs();
-            alertUser();
+        if(currentRoadSegmentSpeed > roadSpeedLimit) {
+            if(JourneyStatus.getInstance(context).getJourneyOngoing()) {
+                Log.e("CheckSpeed", "Alert User");
+                updateDrivingLogs();
+                alertUser();
+            }
         }
     }
 
-    private void updatedDetailedLogs() {
+    private void updateDrivingLogs() {
         //TODO: Do this in a thread
+        JourneyStatus.getInstance(context).incrementOverSpeedCount();
+
         DetailedLog detailedLogObject = new DetailedLog();
         detailedLogObject.setSummaryId(JourneyStatus.getInstance(context).getLastDetailedLogEntryNumber() + 1);
         detailedLogObject.setLatitude(currentLocation.latitude);

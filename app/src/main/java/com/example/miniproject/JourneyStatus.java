@@ -25,6 +25,7 @@ public class JourneyStatus {
     private static int drowsinessCount;
     private Context mContext;
     private long lastDetailedLogEntryNumber;
+    private boolean journeyOngoing;
 
     //TODO: Both to be initialized during splash screen
     private List<SummaryLog> summaryLogList;
@@ -43,6 +44,7 @@ public class JourneyStatus {
         drowsinessCount = 0;
         journeyStartTime = new String();
         journeyEndTime = new String();
+        journeyOngoing = false;
     }
 
     private JourneyStatus(Context context) {
@@ -56,8 +58,9 @@ public class JourneyStatus {
         lastDetailedLogEntryNumber = DataBaseHelper.getInstance(context).getNumberOfEntriesInSummaryLogs();
     }
 
-    public void toggleJourneyState() {
+    public void toggleJourneyState(View view, Context context) {
         journeyState ^= 1;
+        setJourneyStateButton(view, context);
     }
 
     //TODO: Whenever the journey starts or ends, intent it to the maps activity
@@ -110,10 +113,12 @@ public class JourneyStatus {
         lastDetailedLogEntryNumber++;
     }
 
-    public void updateJourneyLog() {
+    public void updateJourneyLog(View view, Context context) {
         if(journeyState == JOURNEY_NOT_STARTED) {
+            journeyOngoing = true;
             journeyStartTime = getDateTime(System.currentTimeMillis());
         } else if(journeyState == JOURNEY_STARTED) {
+            journeyOngoing = false;
             journeyEndTime = getDateTime(System.currentTimeMillis());
             incrementSummaryLogEntry();
             final SummaryLog newJourneySummaryLog = new SummaryLog(journeyStartTime, journeyEndTime, journeyDistance, overSpeedCount, drowsinessCount);
@@ -136,9 +141,9 @@ public class JourneyStatus {
 //            });
 
             //TODO: Generate a message for ending journey
-            toggleJourneyState();
             startNewJourney();
         }
+        toggleJourneyState(view, context);
 //        Log.e("Inserting data", "Detailed logs");
 //        DataBaseHelper.getInstance(mContext).insertDetailedLog(new DetailedLog(1,56.324564,45.26454562,20,15, getDateTime(System.currentTimeMillis())));
 //        DataBaseHelper.getInstance(mContext).getDetailedLog(1);
@@ -155,5 +160,9 @@ public class JourneyStatus {
 
     public long getLastDetailedLogEntryNumber() {
         return lastDetailedLogEntryNumber;
+    }
+
+    public boolean getJourneyOngoing() {
+        return journeyOngoing;
     }
 }
