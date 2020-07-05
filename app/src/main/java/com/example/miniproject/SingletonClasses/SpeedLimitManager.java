@@ -141,6 +141,10 @@ public class SpeedLimitManager {
         }
     }
 
+    public String getMarkerText() {
+        return "<b>Current location</b><br><b>Latitude: </b>" + currentLocation.latitude + "<br>" + "<b>Longitude:</b> " + currentLocation.longitude + "<br>" + "<b>Speed Limit:</b> " + roadSpeedLimit + " km/h";
+    }
+
     private void updateDrivingLogs() {
         //TODO: Do this in a thread
         JourneyStatus.getInstance(context).incrementOverSpeedCount();

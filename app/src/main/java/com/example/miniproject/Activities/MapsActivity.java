@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -168,6 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 previousLocation = source;
 //                previousTime = System.currentTimeMillis();
                 Log.e("Location", source.toString());
+                final String markerText = SpeedLimitManager.getInstance(MapsActivity.this).getMarkerText();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -175,7 +177,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             sourceMarker.remove();
                         if(lastKnownLocation == null)
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(source, DEFAULT_ZOOM));
-                        sourceMarker = mMap.addMarker(new MarkerOptions().position(source).title("Current location"));
+                        sourceMarker = mMap.addMarker(new MarkerOptions().position(source).title("Current Location"));
+                        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                            @Override
+                            public View getInfoWindow(Marker marker) {
+                                return null;
+                            }
+
+                            @Override
+                            public View getInfoContents(Marker marker) {
+                                TextView textView = new TextView(MapsActivity.this);
+                                textView.setText(Html.fromHtml(markerText));
+                                return textView;
+                            }
+                        });
+                        sourceMarker.showInfoWindow();
                         Log.e("Marker","Added at source");
                     }
                 });
@@ -331,6 +347,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if(destinationMarker != null)
                             destinationMarker.remove();
                         destinationMarker = mMap.addMarker(new MarkerOptions().position(destination).title("Destination"));
+                        destinationMarker.showInfoWindow();
                     }
                 });
             } else {
