@@ -1,78 +1,38 @@
-package com.example.miniproject.Activities;
+package com.example.miniproject.Camera;
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.hardware.Camera.Face;
+import android.hardware.Camera.FaceDetectionListener;
 import android.hardware.SensorManager;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.Face;
-import android.hardware.camera2.params.StreamConfigurationMap;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
-import android.util.Size;
-import android.util.SparseIntArray;
-import android.view.MenuItem;
 import android.view.OrientationEventListener;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.TextureView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import android.view.ViewGroup.LayoutParams;
 
-import com.example.miniproject.Camera.CameraActivity;
-import com.example.miniproject.Camera.CameraErrorCallback;
-import com.example.miniproject.Camera.FaceOverlayView;
-import com.example.miniproject.Camera.Util;
 import com.example.miniproject.NativeClasses.Native;
-import com.example.miniproject.Utilities.AlertUserAudio;
-import com.example.miniproject.SingletonClasses.JourneyStatus;
-import com.example.miniproject.NativeClasses.Model;
 import com.example.miniproject.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import kotlin.jvm.internal.Intrinsics;
 
-public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback   {
 
 
 
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    private static final int PERMISSION_REQUEST_CODE = 200;
+public class CameraActivity extends Activity
+        implements SurfaceHolder.Callback  {
 
-    public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = CameraActivity.class.getSimpleName();
 
     private Camera mCamera;
     private Boolean bProcessing=false;
@@ -92,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private int mDisplayOrientation;
 
     // Holds the Face Detection result:
-    private Camera.Face[] mFaces;
+    private Face[] mFaces;
 
     // The surface view for the camera data
     private SurfaceView mView;
@@ -107,15 +67,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
      * Sets the faces for the overlay view, so it can be updated
      * and the face overlays will be drawn again.
      */
-    private Camera.FaceDetectionListener faceDetectionListener = new Camera.FaceDetectionListener() {
+    private FaceDetectionListener faceDetectionListener = new FaceDetectionListener() {
         @Override
-        public void onFaceDetection(Camera.Face[] faces, Camera camera) {
+        public void onFaceDetection(Face[] faces, Camera camera) {
             Log.d("onFaceDetection", "Number of Faces:" + faces.length);
             // Update the view now!
             mFaceView.setFaces(faces);
-            Camera.Face bestface = null;
+            Face bestface = null;
             int score=30;
-            for(Camera.Face face: faces)
+            for(Face face: faces)
             {
                 if(face.score>score){
                     score=face.score;
@@ -150,89 +110,26 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             bProcessing = false;
         }
     };
-    private BottomNavigationView bottomNavigationView;
-    private Button journeyStateButton;
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-
-        mView = (SurfaceView)findViewById(R.id.surface);
-
-        mFaceView = new FaceOverlayView(MainActivity.this);
-        addContentView(mFaceView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        mView.setVisibility(View.GONE);
-
-        mOrientationEventListener = new MainActivity.SimpleOrientationEventListener(MainActivity.this);
-        mOrientationEventListener.enable();
-
-
+        //setContentView(R.layout.activity_camera);
         // Now create the OverlayView:
-
-
-
-        //TODO: Handle back button
-        bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.camera);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.camera:
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        overridePendingTransition(0, 0);
-                        return true;
-                    case R.id.maps:
-                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
-                        overridePendingTransition(0, 0);
-                        return true;
-                    case R.id.logs:
-                        startActivity(new Intent(getApplicationContext(), DrivingLogs.class));
-                        overridePendingTransition(0, 0);
-                        return true;
-                }
-                return false;
-            }
-        });
-
-        if(checkPermission()) {
-            IntiateCamera();
-        }else {
-            requestPermission();
-        }
-
-        journeyStateButton = findViewById(R.id.journeyStateButton);
-        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, MainActivity.this);
-        journeyStateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JourneyStatus.getInstance(MainActivity.this).updateJourneyLog(journeyStateButton, MainActivity.this);
-                startActivity(new Intent(getApplicationContext(), MapsActivity.class));
-            }
-        });
-
+        mView = (SurfaceView)findViewById(R.id.surface);
+        mFaceView = new FaceOverlayView(this);
+        addContentView(mFaceView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        // Create and Start the OrientationListener:
+        mOrientationEventListener = new SimpleOrientationEventListener(this);
+        mOrientationEventListener.enable();
     }
 
-    private void IntiateCamera() {
-
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        SurfaceHolder holder = mView.getHolder();
         //holder.setFixedSize(0,0);
-
-        mView.setVisibility(View.VISIBLE);
-        final SurfaceHolder holder = mView.getHolder();
-        holder.addCallback(MainActivity.this);
-        mCamera = Camera.open(findFrontFacingCamera());
-        // mCamera.setPreviewCallbackWithBuffer(this);
-        mCamera.setFaceDetectionListener(faceDetectionListener);
-        mCamera.startFaceDetection();
-        try {
-            mCamera.setPreviewDisplay(holder);
-        } catch (Exception e) {
-            Log.e(TAG, "Could not preview the image.", e);
-        }
-
+        holder.addCallback(this);
     }
 
     @Override
@@ -264,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         mCamera = Camera.open(findFrontFacingCamera());
-        // mCamera.setPreviewCallbackWithBuffer(this);
+       // mCamera.setPreviewCallbackWithBuffer(this);
         mCamera.setFaceDetectionListener(faceDetectionListener);
         mCamera.startFaceDetection();
         try {
@@ -309,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     private void setDisplayOrientation() {
         // Now set the display orientation:
-        mDisplayRotation = Util.getDisplayRotation(MainActivity.this);
+        mDisplayRotation = Util.getDisplayRotation(CameraActivity.this);
         mDisplayOrientation = Util.getDisplayOrientation(mDisplayRotation, findFrontFacingCamera());
 
         mCamera.setDisplayOrientation(mDisplayOrientation);
@@ -373,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             // When the screen is unlocked, display rotation may change. Always
             // calculate the up-to-date orientationCompensation.
             int orientationCompensation = mOrientation
-                    + Util.getDisplayRotation(MainActivity.this);
+                    + Util.getDisplayRotation(CameraActivity.this);
             if (mOrientationCompensation != orientationCompensation) {
                 mOrientationCompensation = orientationCompensation;
                 mFaceView.setOrientation(mOrientationCompensation);
@@ -446,57 +343,4 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
         return $this$mapTo;
     }
-    private boolean checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            return false;
-        }
-        return true;
-    }
-
-    private void requestPermission() {
-
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CAMERA},
-                PERMISSION_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
-                    IntiateCamera();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            showMessageOKCancel("You need to allow access permissions",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermission();
-                                            }
-                                        }
-                                    });
-                        }
-                    }
-                }
-                break;
-        }
-    }
-
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(MainActivity.this)
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
-
 }
