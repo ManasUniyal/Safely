@@ -11,6 +11,7 @@ import android.hardware.Camera;
 import android.view.View;
 
 import com.example.miniproject.R;
+import com.example.miniproject.Utilities.CameraUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -69,25 +70,9 @@ public class FaceOverlayView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mFaces != null && mFaces.length > 0) {
-            Matrix matrix = new Matrix();
-            Util.prepareMatrix(matrix, false, mDisplayOrientation, getWidth(), getHeight());
-            canvas.save();
-            matrix.postRotate(mOrientation);
-            canvas.rotate(-mOrientation);
-            RectF rectF = new RectF();
-            for (Camera.Face face : mFaces) {
-               // Rect rr = mapTo(face.rect,getWidth(),getHeight(),mOrientation);
-                rectF.set(face.rect);
-                matrix.mapRect(rectF);
-                canvas.drawRect(face.rect, mPaint);
-                canvas.drawText("Score " + face.score, rectF.right, rectF.top, mTextPaint);
-            }
-            canvas.restore();
-        }
         if(landmarks!=null&&landmarks.length>0){
             Matrix matrix = new Matrix();
-            Util.prepareMatrix(matrix, false, mDisplayOrientation, getWidth(), getHeight());
+            CameraUtil.prepareMatrix(matrix, false, mDisplayOrientation, getWidth(), getHeight());
             canvas.save();
 
             matrix.postRotate(mOrientation);
@@ -102,6 +87,23 @@ public class FaceOverlayView extends View {
             }
             canvas.restore();
         }
+        if (mFaces != null && mFaces.length > 0) {
+            Matrix matrix = new Matrix();
+            CameraUtil.prepareMatrix(matrix, false, mDisplayOrientation, getWidth(), getHeight());
+            canvas.save();
+            matrix.postRotate(mOrientation);
+            canvas.rotate(-mOrientation);
+            RectF rectF = new RectF();
+            for (Camera.Face face : mFaces) {
+               // Rect rr = mapTo(face.rect,getWidth(),getHeight(),mOrientation);
+                rectF.set(face.rect);
+                matrix.mapRect(rectF);
+                canvas.drawRect(face.rect, mPaint);
+                canvas.drawText("Score " + face.score, rectF.right, rectF.top, mTextPaint);
+            }
+            canvas.restore();
+        }
+
 
 
     }

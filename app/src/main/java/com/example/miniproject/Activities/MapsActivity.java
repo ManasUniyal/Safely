@@ -194,7 +194,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private double getDistance(LatLng newPosition, LatLng oldPosition) {
-        assert (newPosition!=null && oldPosition!=null);
+        if(newPosition==null || oldPosition==null) {
+            return 0;
+        }
         float[] results = new float[1];
         Location.distanceBetween(oldPosition.latitude, oldPosition.longitude, newPosition.latitude, newPosition.longitude, results);
         return results[0];

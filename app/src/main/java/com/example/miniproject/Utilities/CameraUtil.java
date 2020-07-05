@@ -1,4 +1,4 @@
-package com.example.miniproject.Camera;
+package com.example.miniproject.Utilities;
 
 import android.app.Activity;
 import android.graphics.Matrix;
@@ -26,11 +26,11 @@ import java.util.List;
  *  Copyright (C) 2011 The Android Open Source Project
  *
  */
-public class Util {
+public class CameraUtil {
     // Orientation hysteresis amount used in rounding, in degrees
     private static final int ORIENTATION_HYSTERESIS = 5;
 
-    private static final String TAG = "Util";
+    private static final String TAG = "CameraUtil";
 
     /**
      * Gets the current display rotation in angles.

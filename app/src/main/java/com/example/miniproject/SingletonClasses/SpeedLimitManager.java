@@ -159,6 +159,5 @@ public class SpeedLimitManager {
 
     private void alertUser() {
         AlertUserAudio.getInstance(context).startWarning();
-        //TODO: Make entry into database, if condition satisfies (to be decided)
     }
 }

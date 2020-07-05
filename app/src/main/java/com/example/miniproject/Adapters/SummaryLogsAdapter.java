@@ -50,7 +50,7 @@ public class SummaryLogsAdapter extends RecyclerView.Adapter<SummaryLogsAdapter.
 
         holder.textViewStartTime.setText("Start Time\n" + summaryLog.getStartTime());
         holder.textViewEndTime.setText("End Time\n" + summaryLog.getEndTime());
-        holder.textViewDistance.setText("Distance \n" + String.format("%.2f",summaryLog.getDistance()) + " Km");
+        holder.textViewDistance.setText("Distance \n" + String.format("%.2f",summaryLog.getDistance()) + " m");
         holder.textViewDuration.setText("Duration \n" +  summaryLog.getDuration() + " Hrs");
     }
 

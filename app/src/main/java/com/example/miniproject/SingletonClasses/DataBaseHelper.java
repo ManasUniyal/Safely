@@ -25,7 +25,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private Context applicationContext;
     private static DataBaseHelper dataBaseHelperInstance = null;
 
-    //TODO: Use better naming
     private static final String TABLE_SUMMARY_LOGS = "summaryLogs";
     private static final String TABLE_DETAILED_LOGS = "detailedLogs";
 
