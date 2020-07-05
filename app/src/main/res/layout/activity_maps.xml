@@ -62,9 +62,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/quantum_white_100"
-        android:backgroundTint="@color/dark_green"
         map:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/currentSpeedTextView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/circular_text_view"
+        android:gravity="center"
+        android:text="0 km/h"
+        map:layout_constraintBottom_toTopOf="@+id/journeyStateButton"
         map:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

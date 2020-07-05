@@ -97,7 +97,6 @@
         android:id="@+id/journeyStateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/dark_green"
         android:textColor="@color/quantum_white_100"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"

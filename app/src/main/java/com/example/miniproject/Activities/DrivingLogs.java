@@ -95,11 +95,11 @@ public class DrivingLogs extends AppCompatActivity implements SummaryLogsAdapter
         recyclerView.setAdapter(summaryLogsAdapter);
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, DrivingLogs.this);
+        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, bottomNavigationView, DrivingLogs.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance(DrivingLogs.this).updateJourneyLog(journeyStateButton, DrivingLogs.this);
+                JourneyStatus.getInstance(DrivingLogs.this).updateJourneyLog(journeyStateButton, bottomNavigationView, DrivingLogs.this);
                 startActivity(new Intent(getApplicationContext(), MapsActivity.class));
             }
         });

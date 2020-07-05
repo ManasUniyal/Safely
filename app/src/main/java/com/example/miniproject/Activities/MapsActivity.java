@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -82,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int DEFAULT_TIME_GAP = 10000;
     private BottomNavigationView bottomNavigationView;
     private Button journeyStateButton;
+    private TextView currentSpeedTextView;
 //    private long previousTime;
 
     @Override
@@ -127,11 +129,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, MapsActivity.this);
+        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, bottomNavigationView, MapsActivity.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance(MapsActivity.this).updateJourneyLog(journeyStateButton, MapsActivity.this);
+                JourneyStatus.getInstance(MapsActivity.this).updateJourneyLog(journeyStateButton, bottomNavigationView, MapsActivity.this);
             }
         });
 
@@ -181,6 +183,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    private void displayRoadSegmentSpeed(final int speed) {
+        currentSpeedTextView = findViewById(R.id.currentSpeedTextView);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                currentSpeedTextView.setText(speed + " km/h");
+            }
+        });
+    }
+
     private double getDistance(LatLng newPosition, LatLng oldPosition) {
         assert (newPosition!=null && oldPosition!=null);
         float[] results = new float[1];
@@ -193,12 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        long endTime = System.currentTimeMillis();
 //        long time = endTime - previousTime;
         final double speed = (distance/DEFAULT_TIME_GAP) * 1000 * 3.6;  //speed in km/h
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), String.valueOf(Math.floor(speed)), Toast.LENGTH_LONG).show();
-            }
-        });
+        displayRoadSegmentSpeed((int) Math.floor(speed));
         Log.e("Speed", String.valueOf(speed));
         return (int) Math.floor(speed);
     }

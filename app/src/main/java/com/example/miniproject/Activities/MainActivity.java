@@ -107,11 +107,11 @@ public class MainActivity extends AppCompatActivity {
         textureView.setSurfaceTextureListener(textureListener);
 
         journeyStateButton = findViewById(R.id.journeyStateButton);
-        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, MainActivity.this);
+        JourneyStatus.getInstance(getApplicationContext()).setJourneyStateButton(journeyStateButton, bottomNavigationView, MainActivity.this);
         journeyStateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JourneyStatus.getInstance(MainActivity.this).updateJourneyLog(journeyStateButton, MainActivity.this);
+                JourneyStatus.getInstance(MainActivity.this).updateJourneyLog(journeyStateButton, bottomNavigationView, MainActivity.this);
                 startActivity(new Intent(getApplicationContext(), MapsActivity.class));
             }
         });

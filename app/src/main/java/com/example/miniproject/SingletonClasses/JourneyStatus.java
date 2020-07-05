@@ -11,6 +11,7 @@ import android.widget.Button;
 import com.example.miniproject.Adapters.SummaryLogsAdapter;
 import com.example.miniproject.DataClasses.SummaryLog;
 import com.example.miniproject.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Calendar;
 import java.util.List;
@@ -62,20 +63,20 @@ public class JourneyStatus {
         lastDetailedLogEntryNumber = DataBaseHelper.getInstance(context).getNumberOfEntriesInSummaryLogs();
     }
 
-    public void toggleJourneyState(View view, Context context) {
+    public void toggleJourneyState(Button button, BottomNavigationView bottomNavigationView, Context context) {
         journeyState ^= 1;
-        setJourneyStateButton(view, context);
+        setJourneyStateButton(button, bottomNavigationView, context);
     }
 
     //TODO: Whenever the journey starts or ends, intent it to the maps activity
-    public void setJourneyStateButton(View view, Context context) {
-        final Button btn = (Button) view;
+    public void setJourneyStateButton(final Button btn, final BottomNavigationView bottomNavigationView, Context context) {
         if(journeyState == JOURNEY_NOT_STARTED) {
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     btn.setText(R.string.start_journey);
-                    btn.setBackgroundColor(Color.GREEN);
+                    btn.setBackgroundColor(Color.parseColor("#2196F3"));
+                    bottomNavigationView.setVisibility(View.VISIBLE);
                 }
             });
         } else {
@@ -83,7 +84,8 @@ public class JourneyStatus {
                 @Override
                 public void run() {
                     btn.setText(R.string.end_journey);
-                    btn.setBackgroundColor(Color.RED);
+                    btn.setBackgroundColor(Color.parseColor("#8B0000"));
+                    bottomNavigationView.setVisibility(View.GONE);
                 }
             });
         }
@@ -117,11 +119,13 @@ public class JourneyStatus {
         lastDetailedLogEntryNumber++;
     }
 
-    public void updateJourneyLog(View view, Context context) {
+    public void updateJourneyLog(Button button, BottomNavigationView bottomNavigationView, Context context) {
         if(journeyState == JOURNEY_NOT_STARTED) {
+            bottomNavigationView.setVisibility(View.GONE);
             journeyOngoing = true;
             journeyStartTime = getDateTime(System.currentTimeMillis());
         } else if(journeyState == JOURNEY_STARTED) {
+            bottomNavigationView.setVisibility(View.VISIBLE);
             journeyOngoing = false;
             journeyEndTime = getDateTime(System.currentTimeMillis());
             incrementSummaryLogEntry();
@@ -147,7 +151,7 @@ public class JourneyStatus {
             //TODO: Generate a message for ending journey
             startNewJourney();
         }
-        toggleJourneyState(view, context);
+        toggleJourneyState(button, bottomNavigationView, context);
 //        Log.e("Inserting data", "Detailed logs");
 //        DataBaseHelper.getInstance(mContext).insertDetailedLog(new DetailedLog(1,56.324564,45.26454562,20,15, getDateTime(System.currentTimeMillis())));
 //        DataBaseHelper.getInstance(mContext).getDetailedLog(1);
