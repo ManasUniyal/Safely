@@ -49,10 +49,11 @@
         android:layout_width="163dp"
         android:layout_height="241dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="320dp"
+        android:layout_marginTop="260dp"
         android:text="Guided by-\nDr. Rajitha B\n\nDeveloped by - \nManas Uniyal\nRajat Kumar\nUmang Gupta"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/activity_splash_details"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_splash_title_desc" />
 </androidx.constraintlayout.widget.ConstraintLayout>
