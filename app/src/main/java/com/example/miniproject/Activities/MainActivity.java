@@ -218,6 +218,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onPause() {
         super.onPause();
         mOrientationEventListener.disable();
+        mCamera.setPreviewCallback(null);
+        mCamera.stopPreview();
         mCamera.release();
     }
 
@@ -329,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         mCamera.setFaceDetectionListener(null);
         mCamera.setErrorCallback(null);
         mCamera.release();
+        mCamera.stopPreview();
         mCamera = null;
     }
 
