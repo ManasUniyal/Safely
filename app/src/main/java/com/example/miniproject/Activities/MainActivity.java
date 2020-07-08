@@ -216,15 +216,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     protected void onPause() {
+        super.onPause();
         mOrientationEventListener.disable();
         mCamera.release();
-        super.onPause();
     }
 
     @Override
     protected void onResume() {
-        mOrientationEventListener.enable();
         super.onResume();
+        mOrientationEventListener.enable();
     }
     private int findFrontFacingCamera() {
         int cameraId = -1;

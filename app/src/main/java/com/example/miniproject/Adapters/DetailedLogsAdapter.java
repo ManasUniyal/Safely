@@ -34,8 +34,8 @@ public class DetailedLogsAdapter extends RecyclerView.Adapter<DetailedLogsAdapte
         DetailedLog detailedLog = detailedLogList.get(position);
         holder.textViewLatitude.setText(String.valueOf(detailedLog.getLatitude()));
         holder.textViewLongitude.setText(String.valueOf(detailedLog.getLongitude()));
-        holder.textViewSpeed.setText(String.valueOf(detailedLog.getSpeed()));
-        holder.textViewSpeedLimit.setText(String.valueOf(detailedLog.getSpeedLimit()));
+        holder.textViewSpeed.setText("Speed: " + detailedLog.getSpeed());
+        holder.textViewSpeedLimit.setText("Speed limit: " + detailedLog.getSpeedLimit());
         holder.textViewDateTime.setText(detailedLog.getDateTime());
     }
 
